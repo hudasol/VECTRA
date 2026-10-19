@@ -1,0 +1,7 @@
+# Provisional. Versions are pinned only after the first environment test succeeds.
+numpy
+scipy
+pandas
+pyyaml
+matplotlib
+pytest
