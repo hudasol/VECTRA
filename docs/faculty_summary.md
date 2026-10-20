@@ -15,7 +15,7 @@ We are studying whether a compass like heading cue, in the manner of desert ant 
 
 ## Status on 2026-10-20
 
-- Done: repository with 13 documents and configuration files, protocol draft v0, feasibility note.
+- Done: repository with 11 documents in docs/, a README, a citation file and three configuration files, protocol draft v0, feasibility note.
 - Chosen in advance: primary metric is end point drift ratio (final position error divided by path length), with the reason written in the protocol.
 - Not done: no experiment, no baseline run, no novelty claim. The dataset check and the novelty audit are in progress with the student authors.
 
