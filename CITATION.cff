@@ -1,0 +1,14 @@
+cff-version: 1.2.0
+message: "Provisional citation file. Author order, affiliations and licence are to be confirmed."
+title: "VECTRA: Vector based Estimation and Cognition for Terrain Robotics and Autonomy (provisional name)"
+type: software
+version: "0.0.0"
+date-released: "2026-10-20"
+repository-code: "https://github.com/hudasol/VECTRA"
+authors:
+  - family-names: "Mueen"
+    given-names: "Huda"
+    email: "hudamueen2407@gmail.com"
+  # Remaining authors to be added once confirmed: Aiman Shariff, Maryam Zafar,
+  # Dr. Rajesh Subramanian, Dr. Narina Thakur.
+license: "To be decided"
