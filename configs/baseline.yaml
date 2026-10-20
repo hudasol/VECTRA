@@ -1,0 +1,6 @@
+# Draft v0. Route (a) or (b) is not yet chosen; see docs/baseline_feasibility.md.
+baselines:
+  B0: {name: visual_inertial_only, heading_update: false}
+  B1: {name: heading_aided_fixed_noise, heading_update: true, heading_noise: fixed}
+  B2: {name: reliability_aware_heading, heading_update: true, heading_noise: adaptive}
+estimator_route: undecided
