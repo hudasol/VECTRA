@@ -1,7 +1,7 @@
-# E02 image based study configuration (draft until the protocol v0.2 freeze).
+# E02 image based study configuration, frozen with protocol v0.2.
 # Values marked (pilot) are set on the pilot split only. Values marked (assumed) are
 # modelling assumptions with the source or reason given in docs/experiment_protocol_v0.2.md.
-version: "v0.2-draft"
+version: "v0.2-frozen"
 data:
   repo: theairlabcmu/TartanGround
   base_url: https://huggingface.co/datasets/theairlabcmu/TartanGround/resolve/main
@@ -36,12 +36,12 @@ imu:                          # noise added to the noise free dataset IMU (assum
   accel_bias_init_sigma: 0.02
   accel_bias_rw: 0.001
 filter:
-  vo_sigma: [0.05, 0.05, 0.005]   # (pilot) forward, right m/s and yaw rate rad/s
+  vo_sigma: [0.0548, 0.041, 0.0049]   # (pilot) 1.4826 MAD of D0 VO errors, forward and right m/s, yaw rate rad/s
   vo_gate_chi2_3dof: 11.34
   heading_nominal_sigma_deg: 1.0  # fixed noise for B1, B1g and the B2 floor
   heading_gate_chi2_1dof: 6.63
   b2_window: 3
-  vo_nis_window: 20               # (pilot) B3a
+  vo_nis_window: 10               # (pilot) rule: lowest mean of level medians of B3a drift, ties within 1 percent go to the smallest
   failure_drift_ratio_pct: 10.0
 compass:                          # zenith polarisation compass (assumed)
   rate_hz: 5
