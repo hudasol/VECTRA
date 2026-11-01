@@ -1,0 +1,46 @@
+# E01 simulation study configuration. Values marked (pilot) are set from the pilot split only.
+version: "v0.1-draft"
+timing:
+  duration_s: 200.0
+  imu_rate_hz: 20
+  visual_rate_hz: 10
+imu:
+  gyro_noise_density: 0.002        # rad/s/sqrt(Hz)
+  accel_noise_density: 0.02        # m/s^2/sqrt(Hz)
+  gyro_bias_init_sigma: 0.002      # rad/s
+  gyro_bias_rw: 0.0001             # rad/s/sqrt(s)
+  accel_bias_init_sigma: 0.02      # m/s^2
+  accel_bias_rw: 0.001             # m/s^2/sqrt(s)
+visual:
+  speed_sigma: 0.05                # m/s at D0
+  yawrate_sigma: 0.01              # rad/s at D0
+  scale_error_sigma: 0.01
+  dropout_mean_burst_s: 1.5
+  outlier_speed_error: 1.5         # m/s
+  gate_chi2_2dof: 9.21
+levels:                            # (pilot) graded, not saturated
+  D0: {noise_mult: 1.0, dropout_frac: 0.00, outlier_prob: 0.000}
+  D1: {noise_mult: 1.5, dropout_frac: 0.03, outlier_prob: 0.005}
+  D2: {noise_mult: 2.5, dropout_frac: 0.10, outlier_prob: 0.010}
+  D3: {noise_mult: 4.0, dropout_frac: 0.20, outlier_prob: 0.020}
+  D4: {noise_mult: 8.0, dropout_frac: 0.35, outlier_prob: 0.050}
+heading:
+  rate_hz: 2.0
+  noise_sigma_deg: 2.0
+  bias_init_sigma_deg: 1.0
+  bias_rw_deg_per_sqrt_s: 0.05
+  dropout_frac: 0.10
+  dropout_mean_burst_s: 10.0
+  contamination_start_rate_per_s: 0.004
+  contamination_duration_s: [5.0, 20.0]
+  contamination_offset_deg: [20.0, 60.0]
+filter:
+  heading_nominal_sigma_deg: 3.0
+  heading_gate_chi2_1dof: 6.63     # used by B1g only
+  b2_window: 3                     # (pilot, rule in protocol v0.1)
+  failure_drift_ratio_pct: 10.0    # (pilot)
+data:
+  families: [straight, meander, loops, stopgo, slalom, mixed]
+  trajectories_per_family: 6
+  pilot_families: [straight, meander]
+  seeds: 10
