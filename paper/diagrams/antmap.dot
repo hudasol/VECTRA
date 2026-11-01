@@ -1,0 +1,12 @@
+digraph G {
+  rankdir=LR; nodesep=0.18; ranksep=0.6;
+  node [shape=box, style="rounded,filled", fontname="Times-Roman", fontsize=11, margin="0.12,0.05", width=2.3];
+  edge [color="#666666", arrowsize=0.6];
+  subgraph cluster_a { label="Desert ant (Cataglyphis)"; fontname="Times-Bold"; color="#bbbbbb"; style="rounded,dashed";
+    node [fillcolor="#fff4e0", color="#a07020"];
+    a1 [label="Sky polarisation compass"]; a2 [label="Stride integrator"]; a3 [label="Path integrator"]; a4 [label="Weighting of cues\n(polarisation over wind)"]; a5 [label="View memory"]; }
+  subgraph cluster_r { label="Robot in this study"; fontname="Times-Bold"; color="#bbbbbb"; style="rounded,dashed";
+    node [fillcolor="#fde7ef", color="#8a3b5c"];
+    r1 [label="Zenith polarisation compass\n(simulated, Rayleigh sky)"]; r2 [label="Stereo visual odometry\nplus IMU"]; r3 [label="Extended Kalman filter"]; r4 [label="Cue weighting by gate,\ninnovations or measured DoP"]; r5 [label="Not modelled\n(future work)", fillcolor="#eeeeee", color="#999999"]; }
+  a1 -> r1; a2 -> r2; a3 -> r3; a4 -> r4; a5 -> r5 [style=dashed];
+}

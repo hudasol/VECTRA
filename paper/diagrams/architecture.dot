@@ -1,0 +1,16 @@
+digraph G {
+  rankdir=LR; splines=ortho; nodesep=0.25; ranksep=0.35;
+  node [shape=box, style="rounded,filled", fillcolor="#fde7ef", color="#8a3b5c", fontname="Times-Roman", fontsize=11, margin="0.12,0.06"];
+  edge [color="#555555", arrowsize=0.6, fontname="Times-Roman", fontsize=9];
+  subgraph cluster_data { label="TartanGround desert scenes"; fontname="Times-Bold"; fontsize=11; color="#bbbbbb"; style="rounded,dashed";
+    stereo [label="Stereo frames\n10 Hz, 640 x 640"]; depth [label="Depth\n(for haze range)"]; imu [label="Dataset IMU\n100 Hz, noise free"]; gt [label="Ground truth pose"]; }
+  degr [label="Image degradation D0 to D4\nlow light, motion blur,\ndust haze, glare, frame drops"];
+  vo [label="Stereo visual odometry\nKLT tracks, PnP RANSAC\nbody velocity, yaw rate"];
+  imun [label="IMU noise model\nwhite noise, bias walks"];
+  subgraph cluster_sky { label="Sky compass model (Abu Dhabi)"; fontname="Times-Bold"; fontsize=11; color="#bbbbbb"; style="rounded,dashed";
+    sun [label="Sun ephemeris\n(NOAA equations)"]; ray [label="Rayleigh zenith\npolarisation"]; atm [label="Haze, dust,\nbroken cloud"]; comp [label="Zenith compass\nheading mod 180,\nmeasured DoP"]; sun -> ray -> comp; atm -> comp; }
+  w [label="Cue weighting\nB1 fixed, B1g gated,\nB2 covariance matching,\nB3 DoP informed + gate"];
+  ekf [label="8 state EKF\nposition, yaw, velocity,\ngyro and accel biases"];
+  met [label="Metrics and tests\ndrift ratio, NEES,\nWilcoxon, Holm"];
+  stereo -> degr; depth -> degr; degr -> vo -> ekf; imu -> imun -> ekf; comp -> w -> ekf; ekf -> met; gt -> met;
+}

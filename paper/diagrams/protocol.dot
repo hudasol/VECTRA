@@ -1,0 +1,7 @@
+digraph G {
+  rankdir=LR; nodesep=0.2; ranksep=0.25;
+  node [shape=box, style="rounded,filled", fillcolor="#fde7ef", color="#8a3b5c", fontname="Times-Roman", fontsize=11, margin="0.1,0.05"];
+  edge [color="#666666", arrowsize=0.6];
+  p1 [label="Pilot split only\nset levels, noise, windows"]; f [label="Freeze protocol\nrepository tag", fillcolor="#f6c6d8"]; h [label="Held out run\nall estimators"]; t [label="Prespecified tests\nWilcoxon, Holm"]; s [label="Descriptive analyses\nsky envelope, sensitivity"]; r [label="Results register\nall runs reported"];
+  p1 -> f -> h -> t -> r; h -> s -> r;
+}
