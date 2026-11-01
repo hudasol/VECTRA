@@ -9,7 +9,9 @@ not rejected; its noise is inflated so that the NIS equals the gate (bounded inf
 
 Heading modes: 0 B0 no cue, 1 B1 fixed noise, 2 B2 covariance matching, 3 B1g fixed noise
 with a chi square gate, 4 B3 noise from the measured degree of polarisation with a gate,
-5 B3a which is B3 plus a visual noise scale adapted from the visual NIS.
+5 B3a which is B3 plus a visual noise scale adapted from the visual NIS, 6 B4 (exploratory,
+added after the held out run) which uses the DoP based noise as the floor of covariance
+matching with no gate.
 """
 import numpy as np
 from numba import njit
@@ -149,12 +151,22 @@ def run_filter(mode, dt, gyro, acc, vo_idx, vo_ok, vo_vf, vo_vr, vo_w, cue_idx, 
                     cv = np.mean(h_nu2[:m]) - np.mean(h_hph[:m])
                     if cv > Rh0:
                         Rh = cv
-                elif mode >= 4:
+                elif mode == 4 or mode == 5:
                     dm = max(cue_d[ci], 1e-6)
                     Rh = floor_rad * floor_rad + (c_rad / dm) ** 2
+                elif mode == 6:
+                    # exploratory B4: DoP based noise as the floor of covariance matching, no gate
+                    dm = max(cue_d[ci], 1e-6)
+                    Rd = floor_rad * floor_rad + (c_rad / dm) ** 2
+                    h_nu2[hc % w_b2] = nu_h * nu_h
+                    h_hph[hc % w_b2] = hph
+                    hc += 1
+                    m = min(hc, w_b2)
+                    cv = np.mean(h_nu2[:m]) - np.mean(h_hph[:m])
+                    Rh = max(Rd, cv)
                 Sh = hph + Rh
                 use = True
-                if (mode == 3 or mode >= 4) and nu_h * nu_h / Sh > h_gate:
+                if (mode == 3 or mode == 4 or mode == 5) and nu_h * nu_h / Sh > h_gate:
                     use = False
                 if use:
                     K = P[:, 2] / Sh

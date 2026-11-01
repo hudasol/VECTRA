@@ -23,7 +23,7 @@ from vectra.filter2 import run_filter          # noqa: E402
 from vectra.sky import compass_cue             # noqa: E402
 from vectra.evaluation import run_metrics      # noqa: E402
 
-ESTIMATORS = {"B0": 0, "B1": 1, "B2": 2, "B1g": 3, "B3": 4, "B3a": 5}
+ESTIMATORS = {"B0": 0, "B1": 1, "B2": 2, "B1g": 3, "B3": 4, "B3a": 5, "B4": 6}   # B4 is exploratory
 VO_DIR = ROOT / "results" / "e02_vo"
 
 
@@ -117,7 +117,7 @@ if __name__ == "__main__":
     ap.add_argument("--out", required=True)
     ap.add_argument("--workers", type=int, default=2)
     ap.add_argument("--set", nargs="*", default=[])
-    ap.add_argument("--estimators", nargs="*", default=list(ESTIMATORS))
+    ap.add_argument("--estimators", nargs="*", default=[e for e in ESTIMATORS if e != "B4"])
     a = ap.parse_args()
     cfg = load_config(ROOT / "configs" / "e02.yaml")
     for item in a.set:
