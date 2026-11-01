@@ -15,10 +15,10 @@ We are studying whether a compass like heading cue, in the manner of desert ant 
 
 ## Status on 2026-11-01
 
-- Done: repository, charter, registers, protocol v0 and the frozen protocol v0.1 (tag protocol-v0.1-frozen), a tested simulation of a planar rover with four estimators (no heading, fixed noise heading, fixed noise heading with a gate, covariance matching heading), a pilot, a held out run of 4,800 runs and a sensitivity grid of 13,440 runs.
-- Chosen in advance: primary metric is end point drift ratio (final position error divided by path length).
-- Main finding on the simulation: a heading cue lowers drift from the third degradation level onward. The reliability aware variant beats the plain fixed noise cue, but not a fixed noise cue with a simple gate. The sensitivity grid shows where this changes.
-- Not done: no image based experiment, no TartanGround run, no real sensor. A draft paper exists. Novelty is judged narrow, and no new estimator is claimed.
+- Study 1 (surrogate simulation, protocol v0.1): done. A heading cue helps once vision degrades; innovation based adaptation did not beat a simple gate.
+- Study 2 (rendered TartanGround desert scenes, simulated sky compass, protocol v0.2): done on 34 held out trajectories. The compass cuts heading error by about an order of magnitude. A fixed weight compass fails around summer noon, when the sun is near the zenith over Abu Dhabi; weighting by the measured degree of polarisation beats a gated fixed weight, and covariance matching is slightly better overall.
+- Manuscript: paper/vectra_paper.pdf, IEEE conference format, with every number generated from the results files.
+- Not done: no real polarisation sensor, no field test, trajectories of at most 200 s.
 
 ## Proposed recommendation
 
