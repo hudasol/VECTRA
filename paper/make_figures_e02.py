@@ -1,0 +1,114 @@
+"""E02 figures. Sky figures use only the model; result figures read results/e02_*.csv."""
+import sys
+from pathlib import Path
+from datetime import datetime, timedelta
+import numpy as np
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+from vectra.sky import sun_position, zenith_dop, aop_sigma   # noqa: E402
+from vectra.config import load_config                        # noqa: E402
+O = Path(__file__).resolve().parent / "figs"
+plt.rcParams.update({"font.size": 8, "font.family": "serif", "axes.linewidth": 0.6, "pdf.fonttype": 42})
+cfg = load_config(ROOT / "configs" / "e02.yaml")
+LOC = cfg["sky"]["location"]; CO = cfg["compass"]
+
+
+def sun_local(s):
+    t = datetime.fromisoformat(s) - timedelta(hours=LOC["utc_offset_h"])
+    return sun_position(LOC["lat_deg"], LOC["lon_deg"], t)
+
+
+def vec(zen, az):
+    z, a = np.radians(zen), np.radians(az)
+    return np.stack([np.sin(z) * np.sin(a), np.sin(z) * np.cos(a), np.cos(z)], -1)   # east, north, up
+
+
+def sky_panel(ax, s, title):
+    zs, azs = sun_local(s)
+    r = np.linspace(0, 90, 181); th = np.linspace(0, 360, 361)
+    R, T = np.meshgrid(r, th)
+    P = vec(R, T); S = vec(np.array(zs), np.array(azs))
+    cg = np.clip(P @ S, -1, 1)
+    dop = CO["d_max"] * (1 - cg ** 2) / (1 + cg ** 2)
+    X = R * np.sin(np.radians(T)); Y = R * np.cos(np.radians(T))
+    m = ax.pcolormesh(X, Y, dop, cmap="RdPu", vmin=0, vmax=CO["d_max"], shading="auto", rasterized=True)
+    # e-vectors on a coarse grid: perpendicular to the scattering plane, e = p x s
+    for rr in [0, 20, 40, 60, 80]:
+        for tt in (np.arange(0, 360, 30) if rr else [0]):
+            p = vec(np.array(rr), np.array(tt)); e = np.cross(p, S)
+            if np.linalg.norm(e) < 1e-6: continue
+            e /= np.linalg.norm(e)
+            a = np.radians(tt); zr = np.radians(rr)
+            if rr == 0:
+                u, v = e[0], e[1]
+            else:
+                dz = np.array([np.cos(zr) * np.sin(a), np.cos(zr) * np.cos(a), -np.sin(zr)])
+                da = np.array([np.cos(a), -np.sin(a), 0.0])
+                cr, ca = e @ dz, e @ da
+                u = cr * np.sin(a) + ca * np.cos(a); v = cr * np.cos(a) - ca * np.sin(a)
+            x0, y0 = rr * np.sin(a), rr * np.cos(a); L = 6
+            ax.plot([x0 - L * u, x0 + L * u], [y0 - L * v, y0 + L * v], color="k", lw=0.7)
+    ax.plot(zs * np.sin(np.radians(azs)), zs * np.cos(np.radians(azs)), marker="*", color="#e0a000", ms=9, mec="k", mew=0.4)
+    ax.add_patch(plt.Circle((0, 0), 90, fill=False, lw=0.6))
+    ax.text(0, 93, "N", ha="center", fontsize=7); ax.text(93, 0, "E", va="center", fontsize=7)
+    ax.set_aspect("equal"); ax.axis("off"); ax.set_xlim(-100, 100); ax.set_ylim(-100, 100)
+    ax.set_title(f"{title}\nsun zenith {zs:.0f} deg, zenith DoP {zenith_dop(zs, CO['d_max']):.3f}", fontsize=6.5)
+    return m
+
+
+def fig_sky():
+    fig = plt.figure(figsize=(7.1, 2.5))
+    a1 = fig.add_axes([0.0, 0.2, 0.25, 0.68]); a2 = fig.add_axes([0.25, 0.2, 0.25, 0.68])
+    a3 = fig.add_axes([0.6, 0.2, 0.37, 0.65])
+    sky_panel(a1, "2026-06-21T08:00", "21 June, 08:00")
+    m = sky_panel(a2, "2026-06-21T12:30", "21 June, 12:30")
+    cb = fig.colorbar(m, ax=[a1, a2], orientation="horizontal", fraction=0.05, pad=0.02, shrink=0.6)
+    cb.set_label("Rayleigh degree of linear polarisation", fontsize=7); cb.ax.tick_params(labelsize=6)
+    hrs = np.arange(6.0, 18.01, 0.05)
+    for d, ls in [("2026-06-21", "-"), ("2026-12-21", "--")]:
+        base = datetime.fromisoformat(d) - timedelta(hours=LOC["utc_offset_h"])
+        zz = np.array([sun_position(LOC["lat_deg"], LOC["lon_deg"], base + timedelta(hours=float(h)))[0] for h in hrs])
+        sig = np.degrees(aop_sigma(zenith_dop(zz, CO["d_max"]), np.radians(CO["floor_deg"]), np.radians(CO["c_deg"])))
+        sig = np.where(zz < 90, sig, np.nan)
+        a3.plot(hrs, sig, ls=ls, color="#8a3b5c", lw=1.1, label=("21 June" if ls == "-" else "21 December"))
+    a3.set_yscale("log"); a3.set_xlabel("Local time, Abu Dhabi (h)"); a3.set_ylabel("Compass noise, clear sky (deg)")
+    a3.axhline(CO["floor_deg"], color="0.5", lw=0.6, ls=":"); a3.grid(alpha=.25, lw=.4); a3.legend(fontsize=6.5, frameon=False)
+    a3.set_xlim(6, 18)
+    fig.savefig(O / "fig_sky.pdf", dpi=300); fig.savefig(O / "fig_sky.png", dpi=200); plt.close(fig)
+
+
+
+
+def fig_frames():
+    """Pilot frame at every level with the visual odometry inliers marked."""
+    import cv2
+    from vectra.degrade import Degrader, level_params
+    from vectra.vo import StereoVO
+    L = np.load("/home/claude/data/pilot_L.npy", mmap_mode="r"); R = np.load("/home/claude/data/pilot_R.npy", mmap_mode="r")
+    D = np.load("/home/claude/data/pilot_D.npy", mmap_mode="r"); g = np.load("/home/claude/data/pilot_meta.npz")["gyro"]
+    k = 250
+    fig, axs = plt.subplots(1, 5, figsize=(7.1, 1.75))
+    for ax, lv in zip(axs, cfg["levels"]):
+        p = level_params(cfg["levels"], lv); rng = np.random.default_rng(3)
+        dl = Degrader(p, cfg["camera"], rng, 320); dr = Degrader(p, cfg["camera"], np.random.default_rng(3), 320); dr.glare_map = dl.glare_map
+        vo = StereoVO(160, 159.5, 159.5, 0.25)
+        for j in (k - 1, k):
+            a = dl(np.ascontiguousarray(L[j]), np.asarray(D[j], np.float32), g[10 * j], rng)
+            b = dr(np.ascontiguousarray(R[j]), np.asarray(D[j], np.float32), g[10 * j], rng)
+            res = vo.step(a, b, 0.1)
+        ax.imshow(a, cmap="gray", vmin=0, vmax=255)
+        pts = vo.prev_pts.reshape(-1, 2) if vo.prev_pts is not None else np.zeros((0, 2))
+        ax.scatter(pts[:, 0], pts[:, 1], s=1.2, c="#e0408a", lw=0)
+        ax.set_title(f"{lv}: {int(res[4])} inliers" if res[0] else f"{lv}: VO failed", fontsize=7)
+        ax.axis("off")
+    fig.tight_layout(pad=0.2); fig.savefig(O / "fig_frames.pdf", dpi=300); fig.savefig(O / "fig_frames.png", dpi=200); plt.close(fig)
+
+
+if __name__ == "__main__":
+    which = sys.argv[1:] or ["sky"]
+    for w in which:
+        globals()["fig_" + w]()
+    print("ok")
