@@ -1,0 +1,190 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{textcomp}
+\usepackage[T1]{fontenc}
+\hyphenation{GNSS}
+
+\begin{document}
+
+\title{Heading Aided Visual Inertial Dead Reckoning under Degraded Vision: A Prespecified Surrogate Study Inspired by Desert Ant Navigation}
+
+\author{\IEEEauthorblockN{Huda Mueen, Aiman Shariff, Maryam Zafar, Rajesh Subramanian, Narina Thakur}
+\IEEEauthorblockA{[Affiliations to be completed by the authors]\\
+Corresponding author: hudamueen2407@gmail.com}}
+
+\maketitle
+
+\begin{abstract}
+Ground robots that rely on satellite positioning lose it when the signal is jammed, spoofed or blocked, and a camera based dead reckoning fallback degrades when vision degrades. Desert ants cope by integrating a compass heading with a step count. We ask a narrow engineering question that this suggests: when vision degrades, does an absolute heading cue help a visual inertial filter, and does it matter whether the filter adapts to the reliability of that cue? We built a planar simulation with a six state extended Kalman filter, five graded degradation levels applied to the visual measurements, and a synthetic heading cue with noise, bias drift, dropouts and contamination epochs. We compared four systems with no heading cue (B0), a fixed noise cue (B1), a fixed noise cue with a chi square gate (B1g) and a covariance matching cue (B2). The protocol, metrics and statistics were fixed and tagged before the held out run of 24 trajectories with 10 seeds. From the third level of degradation upward, all three heading aided systems had lower median drift than B0 (descriptive); the prespecified tests cover B2 against B0 and show it lower at every level. At the middle level the run level median drift fell from 5.1 percent of path length to 1.2 percent. The adaptive filter B2 beat the ungated filter B1 at four of five levels, but was not distinguishable from the gated filter B1g at any level, with confidence intervals of the paired difference under 0.05 percentage points. A sensitivity grid shows the gate rejects most cue samples when cue noise is several times the assumed value and then loses its advantage, and that a drifting cue bias defeats every heading aided variant. All filters were inconsistent in the sense of normalised estimation error. The results are surrogate level: no images or real sensors were used, and we state what must be tested on real data.
+\end{abstract}
+
+\begin{IEEEkeywords}
+GNSS denied navigation, visual inertial odometry, heading aiding, adaptive Kalman filtering, path integration, prespecification
+\end{IEEEkeywords}
+
+\section{Introduction}
+Ground robots usually take their position from a global navigation satellite system (GNSS). When that signal is lost, dead reckoning from inertial and visual sensors has to carry the robot until the signal returns. The loss is not a hypothetical. Aircraft operators reported 37,770 events of GPS signal loss in the Middle East region in 2023, a rate of 92.96 per 1,000 flights against 29.83 worldwide, in IATA data presented to ICAO \cite{icao_wp69}. These are reported events and not confirmed jamming. The European Union Aviation Safety Agency states that jamming and spoofing have increased since February 2022 and names the Middle East among the affected areas \cite{easa_sib}. Maritime advisories describe GNSS interference in the Gulf and the Strait of Hormuz in October 2025 \cite{ukmto} and, in April 2026, refer to dead reckoning as a fallback while noting that disruptions persisted \cite{mscio}. The United Arab Emirates told ICAO in October 2025 that it has observed an increase in reported interference cases \cite{uae_icao}. We found no source that quantifies the harm to ground robots, so we do not claim any. The motivation is the generic one: a GNSS denied robot needs a fallback that degrades gracefully.
+
+A visual inertial fallback has its own weakness. Filters that use only relative measurements cannot observe global heading, and in a visual inertial system four directions are unobservable: global position and rotation about gravity \cite{hesch}. VINS Mono states that its drift is confined to four degrees of freedom, three of translation and yaw \cite{vinsmono}. Our reading is that yaw drift is therefore structural and not a tuning problem. Visual front ends also fail in the conditions a desert presents. Mars rover visual odometry often failed to find enough unique features in piles of sand \cite{mer}, and in a Sahara analogue dataset low sun flare, over and under exposure and the robot's own shadow degraded tracking \cite{madmax}.
+
+Desert ants of the genus \emph{Cataglyphis} solve a similar problem. They derive heading mainly from a sky compass based on the sun and the polarisation pattern of the sky, and they measure distance with a stride integrator \cite{ronacher}. Travel distance is overestimated when the legs are lengthened on stilts and underestimated on stumps, which shows that the animals integrate steered direction and walked distance \cite{wittlinger}. The integration is imperfect: it makes small but systematic errors \cite{muller88} and underestimates longer distances \cite{sommer04}. In robots, a bee inspired circuit driven by optic flow and an inertial compass returned a robot to within an average of 16 cm of home after outbound journeys of 6 to 12 m \cite{stone}, and a hexapod with a polarised light compass reported a mean homing error of 0.67 percent \cite{antbot}. A recent review says path integration has been implemented on wheeled and legged robots with remarkable accuracy, yet concludes that no scientific study yet demonstrates insect inspired navigation working robustly \cite{decroon}.
+
+We take from the ant one transferable idea: an absolute heading cue combined with a relative motion estimate. The question for an engineer is then specific. When the visual measurements degrade, how much does a heading cue help, and is it necessary to adapt the weight of the cue to its reliability, or is a simple outlier gate enough?
+
+\textbf{Contributions.} (i) A prespecified simulation protocol with frozen primary metric, statistics and held out split, implemented with code and unit tests. (ii) Evidence, on that protocol, that a heading cue helps once vision degrades, that an ungated fixed noise cue can hurt, and that a chi square gate captures nearly all of the benefit of covariance matching under our contamination model. (iii) A sensitivity map that shows where that conclusion fails. (iv) A consistency analysis showing that every filter variant is overconfident. (v) A readiness assessment of the TartanGround dataset for the next stage. We do not claim a new estimator; Section~II-D explains why.
+
+\section{Background and Related Work}
+\subsection{Insect inspired navigation in robotics}
+Wehner's group established the ant's toolkit: a skylight polarisation compass, a path integrator and view based place recognition \cite{wehner03}. The polarisation compass outcompetes the wind compass when it is available \cite{muller07}. Sahabot, a mobile robot with three polarisation opponent sensors, was reported to reach navigation precision comparable to that of the desert ant, and its orientation precision dropped sharply when the compass was replaced by proprioception \cite{labhart}; the original paper \cite{lambrinos} was not available to us, and we rely on the laboratory's description. AntBot combined a polarised light compass with a 12 pixel optic flow sensor and reported a mean homing error of 0.67 percent under conditions similar to those of ants \cite{antbot}. Recent work pairs odometry with learned views to cancel drift, noting that purely path integration based methods are prone to drift from cumulative sensor errors \cite{gattaux, firlefyn}. In the sources we could search we found no primary measurement of sky compass failure under cloud, and the polarisation measurements we opened were made under clear sky \cite{horvath}. A press release for AntBot claims a heading precision of 0.4 degrees in clear or cloudy weather, which we could not verify. We therefore treat the reliability of a sky compass in weather as unknown.
+
+\subsection{Heading and yaw in visual inertial estimation}
+Estimators of this family \cite{mourikis, openvins, vinsmono, orbslam3} have no global heading reference; VINS Mono places the drift in yaw and translation \cite{vinsmono}, OpenVINS offers a position and yaw alignment mode \cite{openvins}, and ORB-SLAM3 excludes yaw from its gravity parameterisation \cite{orbslam3}. Standard linearised filters also gain spurious yaw information, which makes them overconfident in yaw and then in horizontal position \cite{hesch, huang_fej, limourikis}. Evaluation practice follows the unobservable directions: Zhang and Scaramuzza align trajectories with four degrees of freedom for visual inertial systems \cite{zhang18}. Our inference, not a claim from those papers, is that an absolute heading cue makes yaw observable, so a four degree of freedom alignment would remove the very error the cue is meant to fix. We therefore report drift without alignment as the primary metric and ATE only after a stated SE(2) alignment, and we follow the recommendation to use relative error and not only the end point \cite{sturm, geiger}, while keeping the end point drift ratio as a transparent primary because it needs no alignment.
+
+\subsection{Adaptive and robust filtering}
+Adapting a noise covariance from innovations is classical. Covariance matching asks that the sample covariance of the innovations be consistent with its theoretical value, and raises the noise estimate when it is not \cite{zhang20}. The identifiability of the full noise matrix under this approach is disputed: a counter example exists where the system was observable and controllable but the full process noise matrix was not estimable \cite{zhang20}. In heading estimation, AMO-HEAD inflates a magnetometer noise covariance in two steps using chi square quantiles of the squared Mahalanobis distance of the residual, with inflation factors tuned on a validation set recorded in the test environment \cite{amohead}. That work is the closest prior art for our B2 and also a warning about tuning on the test environment, which our protocol prevents.
+
+\subsection{Degradation evaluation and datasets}
+Graded severity is common in robustness benchmarks. ImageNet-C defines five severity levels for 15 corruptions, none of which is darkening, dust haze or sun glare \cite{imagenetc}. A monocular SLAM benchmark with 115 synthetic variants shows that severity orders the parameters and not necessarily the difficulty, and that proxy fidelity can change method rankings \cite{failuredrift}. In the sources we could search we found no primary source that quantifies the effect of dust on a camera for visual odometry; the nearest statement is a mechanism, that airborne dust can introduce strong local gradients that lead to non repeatable features \cite{khattak}. TartanAir states that dark scenes are poorly simulated and lists rain, snow and fog as weather, with no sand or dust weather model \cite{tartanair}. TartanGround provides 878 ground robot trajectories in 63 environments \cite{tartanground}. MADMAX supplies real Sahara analogue data with stereo, a 100 Hz IMU and dual antenna GNSS ground truth, but no magnetometer or sun sensor \cite{madmax}.
+
+\subsection{Position of this work}
+Several works place a heading related cue inside a visual or inertial filter. Sun-BCNN infers a sun direction from a single image, weights it with a Monte Carlo dropout uncertainty and feeds it to stereo visual odometry \cite{sunbcnn}. Joshi and Rekleitis add magnetometer residuals to visual inertial SLAM \cite{joshi}. A polarisation compass with a MEMS inertial unit adapts the measurement noise with variational Bayes but uses no camera \cite{zhao}. MIL-LC scales magnetic residuals by LiDAR reliability \cite{mil_lc}. A learned heteroscedastic covariance for the visual measurement has been tested under synthetic corruption but uses no heading cue \cite{wagstaff}. A benchmark degrades calibration and occlusion of visual inertial systems in tunnels, again without a heading cue \cite{subt}. Several of these works were read at abstract or summary level only (docs/novelty_register.md in the repository records the level for each). Within the sources we opened, none combines a heading cue with graded visual degradation, a documented protocol and a consistency metric. That combination is narrow and may be covered by work we did not open (34 further candidates were screened but not opened). Reliability weighting of a cue by innovation statistics is established practice \cite{zhang20, amohead}. We therefore present B2 as an instance of known technique evaluated in a new controlled setting, and not as a new method.
+
+\section{Method}
+\subsection{Problem and simulator}
+A planar rover follows a trajectory of 200 s at about 1 m/s. Six families are generated: straight, meander, loops, stop and go, slalom and mixed, with six trajectories each. The state is $[x, y, \theta, v, b_g, b_a]$: position, heading, forward speed, gyro bias and accelerometer bias. The IMU runs at 20 Hz with gyro noise density 0.002 rad/s$/\sqrt{\mathrm{Hz}}$ and accelerometer noise density 0.02 m/s$^2/\sqrt{\mathrm{Hz}}$, plus bias random walks. The visual front end is abstracted to 10 Hz measurements of forward speed (standard deviation 0.05 m/s at level D0) and yaw rate (0.01 rad/s), with a 1 percent scale error, gated at the chi square value 9.21 for two degrees of freedom. Speed outliers have a random sign and also perturb the yaw rate measurement. The filter starts from the known pose, and its visual noise stays at the D0 values at every level, so it is mismatched at higher levels by design. This is a surrogate: there are no images, degradation acts on the measurements, and the planar filter has no observability constrained Jacobians, so the consistency results of the visual inertial literature do not transfer directly.
+
+\subsection{Degradation levels}
+Five levels D0 to D4 scale the visual noise by 1, 1.5, 2.5, 4 and 8, set the fraction of time lost to Markov bursts of dropout (mean burst 1.5 s) to 0, 3, 10, 20 and 35 percent, and set the per sample probability of a speed outlier of 1.5 m/s to 0, 0.5, 1, 2 and 5 percent. The levels were chosen on the pilot families so that they are graded and not saturated.
+
+\subsection{Heading cue}
+The cue arrives at 2 Hz with noise 2 degrees, an initial bias with standard deviation 1 degree, a bias random walk of 0.05 degrees per $\sqrt{\mathrm{s}}$, and dropouts covering 10 percent of the time in bursts of mean 10 s. Contamination epochs start at a rate of 0.004 per second, last 5 to 20 s, and add an offset of 20 to 60 degrees, with a random sign, which models a cue that is wrong for a while, such as a disturbed magnetometer or an occluded sky. All filters assume a nominal cue standard deviation of 3 degrees. The cue is synthetic. No real sensor was used, and the parameters are our assumptions, not measurements.
+
+\subsection{Estimators}
+All four systems share one extended Kalman filter and differ only in the heading update. \textbf{B0} uses no heading cue. \textbf{B1} applies a scalar heading update with the fixed nominal noise $R_0=(3^\circ)^2$. \textbf{B1g} is B1 with a gate that rejects an update when the normalised innovation squared exceeds the chi square value 6.63 (one degree of freedom, 99 percent). It was added to the protocol before the freeze, so that adaptation can be separated from outlier rejection. \textbf{B2} sets the heading noise by covariance matching over a window of $W=3$ innovations, $R_h=\max\{R_0,\ \overline{\nu^2}-\overline{HPH^\top}\}$, with no gate. The window was chosen on the pilot families by a rule written before the run (lowest mean of per level medians, the smallest $W$ if all lie within 1 percent). B2 can only raise the noise above the nominal value.
+
+\section{Experimental Protocol}
+\subsection{Prespecification}
+Pilot runs used only the straight and meander families to set the degradation levels and $W$. The protocol was then frozen and tagged in the repository (\texttt{protocol-v0.1-frozen}) before any held out run. The held out split holds the other four families (loops, stop and go, slalom, mixed): 24 trajectories with 10 seeds each, giving 240 runs per system and level. Changes between the first draft and the frozen version (surrogate scope, B1g, the contamination model, the trajectory as the unit of analysis, NEES, the sensitivity grid) are logged. This is a self imposed freeze recorded in a repository tag, not an entry in a public registry. We follow the practice of fixing analytic steps before the outcomes are known and reporting all outcomes \cite{nosek}. The window $W=3$ came from the tie rule, because all candidate windows lay within 1 percent on the pilot families.
+
+\subsection{Metrics}
+The primary metric is the drift ratio, the final position error divided by the path length, in percent, with no alignment. Secondary metrics are position RMSE, ATE after SE(2) alignment, relative error over 10 s, heading RMSE, failure rate (drift above 10 percent), the median position normalised estimation error squared (NEES, expected value 2) and the mean coverage of the 95 percent position ellipse.
+
+\subsection{Statistics}
+The unit of analysis is the trajectory: the 10 seeds are averaged within each trajectory, so $n=24$ per level, because seeds on the same trajectory are not independent samples \cite{derrac}. We test B2 against B1, B0 and B1g at each of five levels, 15 paired Wilcoxon signed rank tests, with Holm correction over all 15 \cite{derrac}. Effects are given as the median paired difference with a bootstrap 95 percent confidence interval (10,000 resamples, above the minimum of 1,000 recommended in \cite{colas}) and as Cliff's delta. Tables of run level medians (Table~I) are descriptive and use all 240 runs.
+
+\section{Results}
+\subsection{Drift under graded degradation}
+Table~I and Fig.~1 give the drift. Without a heading cue, the median drift grows from 1.46 percent at D0 to 5.12 at D2 and 11.04 at D3. At D2, B1g and B2 reduce it to 1.20 percent. At D0, B1 has a higher median drift (1.75 percent) than B0 (1.46), which we read descriptively as an ungated fixed noise cue being hurt by contamination epochs; B1g and B2 reach 0.94 and 0.96. At D4 all systems fail in most runs (failure rates 0.78 to 0.89) and medians are 24 to 39 percent. B1 and B1g were not tested against B0 and we draw no conclusion about them at D4. Position RMSE, ATE, relative error and heading RMSE are in the results files; for example the median heading RMSE at D3 is 2.3 degrees for B1 against 1.0 and 1.1 for B1g and B2.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figs/fig_drift.pdf}
+\caption{Median final drift (percent of path) with interquartile range over 240 runs per point, held out split. Logarithmic axis; points are offset horizontally for legibility.}
+\end{figure}
+
+\begin{table}[t]
+\caption{Held out results, run level medians over 240 runs. Drift is final position error in percent of path; IQR is the interquartile range; Fail is the share of runs with drift above 10 percent; NEES is the median position NEES (ideal 2).}
+\centering\small
+\input{tab_main.tex}
+\end{table}
+
+\subsection{Primary tests}
+Table~II gives the prespecified comparisons on trajectory level data. B2 beats B1 at D0 to D3 (Holm adjusted $p<0.001$ at D0 to D2 and $p=0.0002$ at D3, Cliff's $\delta$ from $-1.0$ to $-0.83$), and beats B0 at every level including D4 (adjusted $p=0.03$). B2 against B1 at D4 is not significant. B2 against B1g is not significant at any level: the adjusted $p$ value is 1.0 at four levels and 0.415 at D3 (the Cliff type $\delta$ here is the paired dominance statistic, the share of trajectories with a positive difference minus the share with a negative one), and the confidence intervals of the median paired difference are within $\pm 0.05$ percentage points of path length at every level, against medians of 1 to 3 percent at D0 to D3. A non significant test is not by itself evidence of equality; the narrow interval is what supports the statement that B1g and B2 are practically equal here. The trajectory level medians in Table~II differ from the run level medians in Table~I because they are medians of per trajectory seed means; at D4 the means are dominated by failed runs (for B2, 68 against 24 percent).
+
+\begin{table}[t]
+\caption{Prespecified paired tests of B2 against each baseline, trajectory level ($n=24$). Difference is B2 minus baseline in percentage points of drift (negative favours B2). $\delta$ is Cliff's delta.}
+\centering\small
+\input{tab_tests.tex}
+\end{table}
+
+\subsection{Consistency}
+All filters are inconsistent (Fig.~2). The NEES is time averaged per run (sampled at 1 Hz) and then the median is taken over runs. The ideal median position NEES is 2 and the ideal 95 percent coverage is 0.95. B0 is closest, with NEES 4.9 and coverage 0.62 at D0. Systems with a heading cue are worse: at D0, B1 reaches 60.9 with coverage 0.23, and B2 reaches 19.5 with coverage 0.31. Coverage falls below 0.2 for every system at D3. The visual measurement noise in the filter is fixed while the true noise grows with the level, which makes every filter overconfident by construction at higher levels; we have not isolated why heading aided variants are worse than B0 at D0 and report it as an open observation. Any use of the filter covariance as a safety signal would be unjustified on this evidence.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{figs/fig_nees.pdf}
+\caption{Median position NEES (left, logarithmic, ideal 2) and mean 95 percent coverage (right, ideal 0.95) by level, held out split. Markers and line styles as in Fig.~1.}
+\end{figure}
+
+\subsection{Sensitivity}
+A prespecified grid changes one cue parameter at a time at level D2 on the held out split (240 runs per cell, descriptive only; Fig.~3). Median drift of B0 is 5.12 percent in all cells. Cue noise: up to 4 degrees, B1g and B2 stay at 1.20 to 1.25 percent. At 8 degrees B1g reaches 1.75 and B2 1.45, and at 16 degrees B1g reaches 4.51, B2 1.94 and B1 1.99. Contamination rate: at 0.012 per second B1 reaches 3.78 percent while B1g and B2 reach 1.20 and 1.19. Dropout: with 90 percent of cue samples missing, B1, B1g and B2 reach 1.52, 1.25 and 1.28. Bias random walk: at 2 degrees per $\sqrt{\mathrm{s}}$, B1, B1g and B2 reach 11.05, 9.84 and 11.17 percent, all worse than B0.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{figs/fig_sens.pdf}
+\caption{Sensitivity grid S1 at level D2: median drift against one cue parameter at a time. Logarithmic vertical axis.}
+\end{figure*}
+
+\section{Discussion}
+\textbf{A cue helps when vision degrades.} From D2 upward every system with a heading cue beat B0 in the median, and the prespecified tests support this for B2 at every level. This is consistent with the idea that motivated the study, but it is a statement about a synthetic cue whose parameters we chose.
+
+\textbf{Outlier handling did most of the work.} B1 is the plain implementation of a heading aid, and it was beaten by B2 at four levels. The gated B1g was as good as B2 everywhere in the main experiment. Under our contamination model, where the cue is occasionally wrong by 20 to 60 degrees, rejecting the update is enough. The sensitivity grid shows where this stops: as true cue noise rises from 2 to 4, 8 and 16 degrees, B1g rejects on average 13, 33, 135 and 241 of about 365 cue samples per run, and at 16 degrees its drift (4.51 percent) is above both B2 (1.94) and the ungated B1 (1.99). The data show that the gate becomes harmful at high noise. They do not show that raising the noise estimate is better than not gating, since B1 does as well as B2 there. B2 also down weights a single large innovation, so the result is best read as outlier handling by either mechanism, with no evidence that adaptation adds to it.
+
+\textbf{A drifting cue defeats the method.} With a bias random walk of 2 degrees per $\sqrt{\mathrm{s}}$, every heading aided variant was worse than no cue. Neither gating nor covariance matching can correct a slowly wandering bias that the filter does not model. A real polarisation or magnetic cue would need a calibration or bias state, and its true bias behaviour is unknown to us.
+
+\textbf{Evidence about the adaptive idea is limited.} Innovation based noise adaptation has a disputed identifiability condition \cite{zhang20}. Our B2 is a one sided inflation with a short window, set by a tie rule on two pilot families. The counter example in \cite{zhang20} concerns the full process noise matrix, so its relevance to a scalar measurement noise is indirect.
+
+\subsection*{Threats to validity}
+\emph{Scope of the readiness assessment.} It rests on papers and documentation; only the dataset metadata were checked directly. \emph{Surrogate level.} There are no images; degradation acts on measurements. TartanAir notes that its dark scenes lack camera noise and blur \cite{tartanair}, and the dust and soiling literature we found is on segmentation and mechanism, not on odometry error \cite{khattak}. The levels are an ordering of parameters, and severity orderings need not match difficulty \cite{failuredrift}. \emph{Synthetic cue and designer bias.} We wrote both the contamination model and the filters, so a gate designed for contamination naturally performs well against it. \emph{Scale.} Runs are 200 s (about 200 m); the ant results we cite involve distances of metres to tens of metres, and drift as a percentage of path may not transfer to kilometres. \emph{Sample.} Twenty four trajectories from four families in one simulator; planar motion only. \emph{Consistency.} The fixed visual noise makes the NEES results partly a product of design. \emph{Failure regime.} D4 is mostly failure and not informative about differences between cue variants. \emph{Statistics.} Fifteen tests were corrected with Holm, but the sensitivity grid and secondary metrics were not tested and carry no inferential weight. \emph{Literature.} Several sources were read through summaries and one key sky compass paper could not be opened; claims about them are limited to what was opened.
+
+\section{Readiness for a Dataset Stage}
+The next stage replaces the surrogate measurements with image based estimates on public data. TartanGround offers 878 trajectories (440 omni wheeled, 198 differential wheeled, 240 legged) in 63 environments, six stereo cameras at 10 Hz with 640 by 640 images, and ground truth poses \cite{tartanground}. The paper mentions IMU data only as generated in post processing and gives no rate or noise model, and the documentation we found for the sibling TartanAir dataset describes an IMU interpolated from the pose by spline differentiation, noise free unless noise is added \cite{tartanair}. The licence of TartanGround is unconfirmed in what we read. The dataset documents no heading reference channel, so a heading cue would have to be generated from ground truth yaw with the corruption model of Section~III-C, which keeps the cue synthetic. Real desert like data with a heading ground truth exist in MADMAX, but without a magnetometer or sky sensor \cite{madmax}. A dataset stage therefore tests the image based front end and the IMU model under realistic degradation, not the real reliability of a compass. Evidence about the compass itself needs hardware.
+
+\section{Conclusion}
+In a prespecified surrogate study, a heading cue reduced dead reckoning drift under degraded vision, an ungated fixed noise cue was fragile, and a simple chi square gate matched covariance matching under the assumed contamination. The gate lost its advantage when cue noise exceeded the assumed value several fold, with no gain for adaptation over no gating, a drifting cue bias defeated every variant, and every filter was overconfident. These results are conditional on a synthetic cue and a measurement level degradation. The study is a controlled starting point: the same protocol can be applied to image based degradation on public data and then to a sensor with real heading error.
+
+\begin{thebibliography}{99}
+\bibitem{icao_wp69} IATA data in ICAO MID Office, Working Paper 69, 21st Meeting of MIDANPIRG, ICAO. [Online]. Available: \url{https://www.icao.int/Meetings/MIDANPIRG-RASG/Documents/WP\%2069.pdf}
+\bibitem{easa_sib} EASA, ``Safety Information Bulletin 2022-02R4: GNSS outages and alterations,'' 3 Jul. 2026.
+\bibitem{ukmto} UKMTO, ``Advisory 034-25 and summary report,'' 3--7 Oct. 2025.
+\bibitem{mscio} MSCIO, ``Advisory 01/2026, Update 12,'' 2 Apr. 2026.
+\bibitem{uae_icao} United Arab Emirates, working paper WP05, 14th Meeting of the MIDANPIRG CNS Sub-Group, ICAO, Oct. 2025.
+\bibitem{hesch} J. A. Hesch, D. G. Kottas, S. L. Bowman, and S. I. Roumeliotis, ``Camera-IMU-based localization: Observability analysis and consistency improvement,'' \emph{Int. J. Robot. Res.}, vol. 33, no. 1, pp. 182--201, 2014.
+\bibitem{vinsmono} T. Qin, P. Li, and S. Shen, ``VINS-Mono: A robust and versatile monocular visual-inertial state estimator,'' \emph{IEEE Trans. Robot.}, vol. 34, no. 4, 2018.
+\bibitem{mer} M. Maimone, Y. Cheng, and L. Matthies, ``Two years of visual odometry on the Mars Exploration Rovers,'' \emph{J. Field Robot.}, vol. 24, no. 3, pp. 169--186, 2007.
+\bibitem{madmax} L. Meyer \emph{et al.}, ``The MADMAX data set for visual-inertial rover navigation on Mars,'' \emph{J. Field Robot.}, 2021, doi:10.1002/rob.22016.
+\bibitem{ronacher} B. Ronacher, ``Path integration in a three-dimensional world: the case of desert ants,'' \emph{J. Comp. Physiol. A}, vol. 206, no. 3, pp. 379--387, 2020.
+\bibitem{wittlinger} M. Wittlinger, R. Wehner, and H. Wolf, ``The ant odometer: stepping on stilts and stumps,'' \emph{Science}, vol. 312, no. 5782, pp. 1965--1967, 2006.
+\bibitem{muller88} M. M\"uller and R. Wehner, ``Path integration in desert ants, \emph{Cataglyphis fortis},'' \emph{Proc. Natl. Acad. Sci. USA}, vol. 85, no. 14, pp. 5287--5290, 1988.
+\bibitem{sommer04} S. Sommer and R. Wehner, ``The ant's estimation of distance travelled: experiments with desert ants, \emph{Cataglyphis fortis},'' \emph{J. Comp. Physiol. A}, vol. 190, no. 1, pp. 1--6, 2004.
+\bibitem{stone} T. Stone \emph{et al.}, ``An anatomically constrained model for path integration in the bee brain,'' \emph{Curr. Biol.}, vol. 27, no. 20, pp. 3069--3085, 2017.
+\bibitem{antbot} J. Dupeyroux, J. R. Serres, and S. Viollet, ``AntBot: A six-legged walking robot able to home like desert ants in outdoor environments,'' \emph{Sci. Robot.}, vol. 4, no. 27, eaau0307, 2019.
+\bibitem{decroon} G. C. H. E. de Croon, J. J. G. Dupeyroux, S. B. Fuller, and J. A. R. Marshall, ``Insect-inspired AI for autonomous robots,'' \emph{Sci. Robot.}, vol. 7, no. 67, eabl6334, 2022.
+\bibitem{wehner03} R. Wehner, ``Desert ant navigation: how miniature brains solve complex tasks,'' \emph{J. Comp. Physiol. A}, vol. 189, no. 8, pp. 579--588, 2003.
+\bibitem{muller07} M. M\"uller and R. Wehner, ``Wind and sky as compass cues in desert ant navigation,'' \emph{Naturwissenschaften}, vol. 94, no. 7, pp. 589--594, 2007.
+\bibitem{labhart} Labhart Laboratory, ``Mobile robot employing insect strategies for navigation'' (project page). [Online]. Available: \url{https://mls.uzh.ch/en/research/fgrimls/Labhart/ModelsRobots/MobileRobot.html}
+\bibitem{lambrinos} D. Lambrinos, R. M\"oller, T. Labhart, R. Pfeifer, and R. Wehner, ``A mobile robot employing insect strategies for navigation,'' \emph{Robot. Auton. Syst.}, vol. 30, no. 1--2, pp. 39--64, 2000.
+\bibitem{gattaux} G. G. Gattaux, J. R. Serres, F. Ruffier, and A. Wystrach, ``Visual homing in outdoor robots using mushroom body circuits and learning walks,'' arXiv:2507.09725, 2025.
+\bibitem{firlefyn} M. V. M. Firlefyn, J. J. Hagenaars, and G. C. H. E. de Croon, ``Direct learning of home vector direction for insect-inspired robot navigation,'' arXiv:2405.03827, 2024.
+\bibitem{horvath} G. Horv\'ath and R. Wehner, ``Skylight polarization as perceived by desert ants and measured by video polarimetry,'' \emph{J. Comp. Physiol. A}, vol. 184, pp. 1--7, 1999.
+\bibitem{mourikis} A. I. Mourikis and S. I. Roumeliotis, ``A multi-state constraint Kalman filter for vision-aided inertial navigation,'' in \emph{Proc. IEEE ICRA}, 2007, pp. 3565--3572.
+\bibitem{openvins} P. Geneva, K. Eckenhoff, W. Lee, Y. Yang, and G. Huang, ``OpenVINS: A research platform for visual-inertial estimation,'' in \emph{Proc. IEEE ICRA}, 2020, pp. 4666--4672.
+\bibitem{orbslam3} C. Campos, R. Elvira, J. J. G\'omez Rodr\'iguez, J. M. M. Montiel, and J. D. Tard\'os, ``ORB-SLAM3: An accurate open-source library for visual, visual-inertial and multi-map SLAM,'' \emph{IEEE Trans. Robot.}, 2021.
+\bibitem{huang_fej} G. P. Huang, A. I. Mourikis, and S. I. Roumeliotis, ``A first-estimates Jacobian EKF for improving SLAM consistency,'' in \emph{Experimental Robotics}, Springer, 2009, pp. 373--382.
+\bibitem{limourikis} M. Li and A. I. Mourikis, ``High-precision, consistent EKF-based visual-inertial odometry,'' \emph{Int. J. Robot. Res.}, vol. 32, no. 6, pp. 690--711, 2013.
+\bibitem{zhang18} Z. Zhang and D. Scaramuzza, ``A tutorial on quantitative trajectory evaluation for visual(-inertial) odometry,'' in \emph{Proc. IEEE/RSJ IROS}, 2018, pp. 7244--7251.
+\bibitem{sturm} J. Sturm, N. Engelhard, F. Endres, W. Burgard, and D. Cremers, ``A benchmark for the evaluation of RGB-D SLAM systems,'' in \emph{Proc. IEEE/RSJ IROS}, 2012, pp. 573--580.
+\bibitem{geiger} A. Geiger, P. Lenz, and R. Urtasun, ``Are we ready for autonomous driving? The KITTI vision benchmark suite,'' in \emph{Proc. IEEE CVPR}, 2012, pp. 3354--3361.
+\bibitem{zhang20} L. Zhang, D. Sidoti, A. Bienkowski, K. R. Pattipati, Y. Bar-Shalom, and D. L. Kleinman, ``On the identification of noise covariances and adaptive Kalman filtering: A new look at a 50 year-old problem,'' \emph{IEEE Access}, vol. 8, pp. 59362--59388, 2020.
+\bibitem{amohead} Q. Guo, S. Yang, J. Lyu, J. Sun, D. Lin, and S. He, ``AMO-HEAD: Adaptive MARG-only heading estimation for UAVs under magnetic disturbances,'' arXiv:2510.10979, 2025.
+\bibitem{imagenetc} D. Hendrycks and T. Dietterich, ``Benchmarking neural network robustness to common corruptions and perturbations,'' in \emph{Proc. ICLR}, 2019.
+\bibitem{failuredrift} A. S. Thomas, S. Agnihotri, and M. Keuper, ``Failure or drift? Evaluating monocular SLAM under synthetic and real-world corruptions,'' arXiv:2608.30690, 2026.
+\bibitem{khattak} S. Khattak, C. Papachristos, and K. Alexis, ``Visual-thermal landmarks and inertial fusion for navigation in degraded visual environments,'' arXiv:1903.01656, 2019.
+\bibitem{tartanair} W. Wang \emph{et al.}, ``TartanAir: A dataset to push the limits of visual SLAM,'' arXiv:2003.14338, 2020; and TartanAir documentation, https://tartanair.org.
+\bibitem{tartanground} M. Patel \emph{et al.}, ``TartanGround: A large-scale dataset for ground robot perception and navigation,'' arXiv:2505.10696, 2025.
+\bibitem{sunbcnn} V. Peretroukhin, L. Clement, and J. Kelly, ``Reducing drift in visual odometry by inferring sun direction using a Bayesian convolutional neural network,'' arXiv:1609.05993.
+\bibitem{joshi} B. Joshi and I. Rekleitis, ``Enhancing visual inertial SLAM with magnetic measurements,'' arXiv:2409.09904, 2024.
+\bibitem{zhao} H. Zhao \emph{et al.}, ``Seamless micro-electro-mechanical system-inertial navigation system/polarization compass navigation method with data and model dual-driven approach,'' \emph{Micromachines}, vol. 15, no. 2, p. 237, 2024, doi:10.3390/mi15020237.
+\bibitem{mil_lc} Q. Lyu, Z. Wu, W. Wang, H. Shen, and D. Wang, ``MIL-LC: A robust magnetometer-inertial-LiDAR fusion multimodal localization framework,'' arXiv:2606.25796, 2026.
+\bibitem{wagstaff} B. Wagstaff, E. Wise, and J. Kelly, ``A self-supervised, differentiable Kalman filter for uncertainty-aware visual-inertial odometry,'' arXiv:2203.07207.
+\bibitem{subt} Y. Zhu, X. Li, T.-M. Nguyen, X. Wang, and S. Yuan, ``Benchmarking visual-inertial odometry in subterranean environments under sensor degradation, miscalibration, and dynamic occlusion,'' arXiv:2609.18628, 2026.
+\bibitem{nosek} B. A. Nosek, C. R. Ebersole, A. C. DeHaven, and D. T. Mellor, ``The preregistration revolution,'' \emph{Proc. Natl. Acad. Sci. USA}, vol. 115, no. 11, pp. 2600--2606, 2018.
+\bibitem{derrac} J. Derrac, S. Garc\'ia, D. Molina, and F. Herrera, ``A practical tutorial on the use of nonparametric statistical tests as a methodology for comparing evolutionary and swarm intelligence algorithms,'' \emph{Swarm Evol. Comput.}, vol. 1, no. 1, pp. 3--18, 2011.
+\bibitem{colas} C. Colas, O. Sigaud, and P.-Y. Oudeyer, ``How many random seeds? Statistical power analysis in deep reinforcement learning experiments,'' arXiv:1806.08295, 2018.
+\end{thebibliography}
+
+\end{document}
