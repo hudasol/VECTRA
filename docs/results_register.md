@@ -18,3 +18,7 @@ Status on 2026-11-01: Study 1 (E01, surrogate) and Study 2 (E02, rendered Tartan
 Deviations from protocol v0.1: none.
 
 Deviations from protocol v0.2: none in the prespecified tests. Added after the held out run and labelled exploratory: system B4 (R-007) and the time of day and gate lock out analyses in the paper.
+
+Errata in protocol v0.2 (found by the internal review after the run; the frozen file is left as written):
+1. The systems table says the B3a window is the last 20 visual updates. Section 9 and configs/e02.yaml say 10, and the run used 10.
+2. The protocol says the inflated visual update makes the NIS equal to the gate. The code multiplies the visual noise by the ratio of the NIS to the gate, so the resulting NIS is at or above the gate. The paper describes the code.
