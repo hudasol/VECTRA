@@ -30,7 +30,7 @@ def family(per, metric, pairs):
 
 def main(path):
     df = pd.read_csv(path)
-    stem = Path(path).stem
+    stem = Path(path).name.split(".")[0]
     per = df.groupby(["traj", "level", "estimator"]).agg(drift=("drift_pct", "mean"), head=("head_rmse_deg", "mean"),
                                                          cover=("cover95_pos", "mean")).reset_index()
     pairs = [("B3", "B1g"), ("B3", "B2"), ("B3", "B0")]
