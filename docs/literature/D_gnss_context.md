@@ -133,7 +133,6 @@ Read-depth key: FULL = whole document passed to the extractor or read as raw tex
 - No UAE GCAA or TDRA public statement on the 2026 Gulf events was found in the pages opened. Khaleej Times and Dawn/AFP contain none either. Do not write "UAE authorities confirmed" anything.
 
 ### U6. Institutional public pages (describe focus only; no endorsement implied)
-- TII Autonomous Robotics Research Center, https://tii.ae/autonomous-robotics. Read PAGE. Focus: perception and computer vision, control and decision making, communication and networking, swarm and coordination; works across air, land, sea surface, underwater; aims for operation without "human intervention and human infrastructure". The page does not name navigation or GNSS-denied work. The ARRC brochure PDF (https://webfiles.tii.ae/2024-10/TII_ARRC_Brochure.pdf) returned binary data: UNREAD.
 - Khalifa University KUCARS, https://www.ku.ac.ae/?p=34544. Read PAGE. Focus list includes "GPS-denied navigation", sense and avoid, embodied AI; MBZIRC maritime challenge involves a GNSS-denied coastal environment; UGV-UAV collaborative inspection of critical infrastructure listed; AV-Lab has an autonomous shuttle, a delivery vehicle, a legged robot, four drones. Page text contains internal inconsistencies (extractor flagged); use only the focus-area list.
 - EDGE Group, official product page not opened (WAM page returned empty). Instead: Janes (TRADE PRESS) "IDEX 2025: Edge Group to supply GPS-Protect to UAE MoD", https://janes.com/osint-insights/defence-news-details/air/idex-2025-edge-group-to-supply-gps-protect-to-uae-mod. Read PAGE. Facts: contract AED227 million (USD61.81 million) for a GNSS anti-jamming system developed by Sign4l; claimed jam-to-signal up to 105 dB (single jammer); four-element antenna array; "platform-agnostic" for UAVs, land and maritime platforms. Shows GNSS interference is treated as a procurement-level threat in the UAE; it is anti-jam hardware, not GNSS-free navigation. EDGE UGV portfolio pages: UNOPENED.
 
@@ -175,7 +174,7 @@ Important distinction: most oil-and-gas and mining material is about structural 
 - EUSPA User Technology Report itself: not opened; GPS World commentary only (10 Mar 2025, PAGE; it quotes STRIKE3 figures: more than 450,000 interfering signals, 59,000 assessed intentional, 2016-2019, 23 countries; attribution to STRIKE3 not to EUSPA).
 - IMO MSC.1/Circ.1644, ITU Radio Regulations, ICAO Doc 9849: referenced only.
 - DHS/NIST resilient PNT profiles (NIST IR 8323): appeared in search, not opened.
-- EDGE official UGV pages (WAM page empty), TII ARRC brochure (binary), Fraunhofer publica record (access denied), CAAS SIB 2026-01: not read.
+- EDGE official UGV pages (WAM page empty), Fraunhofer publica record (access denied), CAAS SIB 2026-01: not read.
 - gpsjam.org: not opened.
 - GCAA website and TDRA website public statements: not located.
 
@@ -190,4 +189,4 @@ Important distinction: most oil-and-gas and mining material is about structural 
 7. NOT SAFE: any claim that GCAA or TDRA publicly confirmed the March 2026 disruptions, or any UAE interference count; none found.
 8. NOT SAFE: oil-and-gas or mining GNSS-denial examples as evidence of hostile interference; they are structural denial (tank floors, underground) and some are vendor pieces. Desert logistics: no source found.
 9. NOT SAFE: quantified harm to UAE ground robots or UAS; only national-economy estimates ($1B per day US, NIST/RTI 2019; £5.2B five days UK) and demonstrations (UAV spoofing from about 1 km, UT Austin 2012) exist in opened sources.
-10. TII ARRC and KUCARS may be described only by public focus (KUCARS lists GPS-denied navigation; TII page does not); EDGE GPS-Protect (AED227 million, Janes) shows anti-jam spending, not an endorsement of GNSS-free navigation.
+10. KUCARS may be described only by its public focus (it lists GPS-denied navigation); EDGE GPS-Protect (AED227 million, Janes) shows anti-jam spending, not an endorsement of GNSS-free navigation.
