@@ -1,7 +1,9 @@
-# Provisional. Versions are pinned only after the first environment test succeeds.
+# Versions are not pinned yet. The simulation study E01 needs numba, tabulate and pytest in addition to the base packages.
 numpy
 scipy
 pandas
 pyyaml
 matplotlib
 pytest
+numba
+tabulate
