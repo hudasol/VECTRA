@@ -60,7 +60,7 @@ def sky_panel(ax, s, title):
 
 
 def fig_sky():
-    fig = plt.figure(figsize=(7.1, 2.5))
+    fig = plt.figure(figsize=(7.1, 2.25))
     a1 = fig.add_axes([0.0, 0.2, 0.25, 0.68]); a2 = fig.add_axes([0.25, 0.2, 0.25, 0.68])
     a3 = fig.add_axes([0.6, 0.2, 0.37, 0.65])
     sky_panel(a1, "2026-06-21T08:00", "21 June, 08:00")
@@ -121,7 +121,7 @@ def _held():
 def fig_e02_main():
     df = _held()
     per = df.groupby(["traj", "level", "estimator"]).agg(dr=("drift_pct", "mean"), h=("head_rmse_deg", "mean")).reset_index()
-    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.1, 2.3))
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.1, 2.1))
     for e, (c, m, l) in STY.items():
         x = np.arange(5) + (list(STY).index(e) - 2.5) * 0.06
         for ax, col in ((a1, "dr"), (a2, "h")):
@@ -141,7 +141,7 @@ def fig_e02_main():
 def fig_envelope():
     df = _held()
     times = cfg["sky"]["start_times"]
-    fig, axs = plt.subplots(1, 4, figsize=(7.1, 2.25), sharey=True)
+    fig, axs = plt.subplots(1, 4, figsize=(7.1, 2.05), sharey=True)
     for ax, sky in zip(axs, ["clear", "haze", "dust", "cloud"]):
         for e in ["B0", "B1", "B1g", "B2", "B3", "B3a"]:
             c, m, l = STY[e]

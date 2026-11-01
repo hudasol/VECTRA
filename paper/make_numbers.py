@@ -95,6 +95,10 @@ for lv in ["D3", "D4"]:
     hr = [q.loc["B0", "h"] / q.loc[e, "h"] for e in W]; dr_ = [100 * (1 - q.loc[e, "dr"] / q.loc["B0", "dr"]) for e in W]
     put(f"hratioMin{L[lv]}", min(hr), 1); put(f"hratioMax{L[lv]}", max(hr), 1)
     put(f"dredMin{L[lv]}", min(dr_), 0); put(f"dredMax{L[lv]}", max(dr_), 0)
+# B3 against B1g outside the June noon window, trajectory level paired medians, D0 to D3 (descriptive)
+per4 = ow.groupby(["traj", "level", "estimator"]).head_rmse_deg.mean().unstack()
+dd = [float((per4.xs(lv, level="level")["B3"] - per4.xs(lv, level="level")["B1g"]).median()) for lv in ["D0", "D1", "D2", "D3"]]
+put("owgapMin", -max(dd), 2); put("owgapMax", -min(dd), 2)
 # tests
 for name, F in [("Fone", F1), ("Ftwo", F2)]:
     for _, r in F.iterrows():
