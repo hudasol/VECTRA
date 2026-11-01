@@ -2,7 +2,7 @@
 
 Vector based Estimation and Cognition for Terrain Robotics and Autonomy (provisional name).
 
-Status: private working repository. The simulation study E01 has been run on synthetic trajectories with a synthetic heading cue (see docs/results_register.md). No image based experiment and no real sensor test has been run.
+Status: private working repository. Two studies have been run (see docs/results_register.md). Study 1 (E01) is a surrogate simulation with a synthetic heading cue. Study 2 (E02) uses rendered desert scenes from TartanGround, stereo visual odometry under five levels of image degradation, and a simulated zenith polarisation compass driven by the sun position over Abu Dhabi. No real sensor or field test has been run.
 
 ## Purpose
 
@@ -12,12 +12,13 @@ We study whether a robot that uses a compass like heading cue, in the way desert
 
 Under controlled visual degradation, does a reliability aware fusion of a heading cue reduce drift in a ground rover estimate compared with (B0) visual inertial only and (B1) heading aided fusion with fixed noise?
 
-The question, hypotheses, metrics and statistics for the simulation study are written in docs/experiment_protocol_v0.1.md, which is frozen (tag protocol-v0.1-frozen). The earlier draft is docs/experiment_protocol.md.
+The question, hypotheses, metrics and statistics are written in docs/experiment_protocol_v0.1.md (Study 1) and docs/experiment_protocol_v0.2.md (Study 2), both frozen before their held out runs. The earlier draft is docs/experiment_protocol.md.
 
 ## Scope
 
 - First platform: a simulated ground rover. A drone is considered only after the rover study is complete.
-- First experiment (E01): a simulated planar rover with controlled degradation levels D0 to D4 applied to the visual measurements and a synthetic heading cue. A TartanGround image stage is planned and has not been run.
+- Study 1 (E01): a simulated planar rover with degradation levels D0 to D4 applied to the visual measurements and a synthetic heading cue. Protocol: docs/experiment_protocol_v0.1.md.
+- Study 2 (E02): TartanGround desert scenes (CC BY 4.0), degraded stereo images, stereo visual odometry, an eight state filter and six compass weighting schemes, 34 held out trajectories. Protocol: docs/experiment_protocol_v0.2.md (tag protocol-v0.2-frozen).
 - The heading cue in E01 is synthetic. Results from E01 say nothing about a real polarisation sensor.
 - This repository is a proposal seed and not a deployed system. It carries no endorsement from any organisation.
 
@@ -26,11 +27,11 @@ The question, hypotheses, metrics and statistics for the simulation study are wr
 | Path | Content |
 | --- | --- |
 | docs/ | Charter, registers, protocols, feasibility note, memos, literature notes in docs/literature |
-| src/vectra/ | Trajectories, sensors, estimators and evaluation for E01 |
-| experiments/E01/ | Run, sensitivity and analysis scripts |
+| src/vectra/ | E01 trajectories, sensors and estimator; E02 image degradation, stereo visual odometry, sky compass model and filter; shared evaluation |
+| experiments/E01/, experiments/E02/ | Run, pilot, sensitivity and analysis scripts |
 | results/ | Output files of the runs registered in docs/results_register.md |
 | tests/ | Unit tests |
-| paper/ | Draft paper, figure and table scripts |
+| paper/ | Manuscript, diagrams, and the scripts that generate every figure, table and quoted number |
 | configs/ | Frozen E01 settings in e01_sim.yaml, plus pointer files |
 | data/ | README only. Datasets are never committed |
 | src/ | Adapters, degradation, estimators, evaluation (empty until implemented) |
