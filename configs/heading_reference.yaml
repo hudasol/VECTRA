@@ -1,10 +1,4 @@
-# Synthetic heading cue derived from ground truth yaw. Draft v0, values to be set after the pilot.
-source: ground_truth_yaw
-noise_sigma_deg: null
-constant_bias_deg: null
-bias_random_walk_deg_per_sqrt_s: null
-dropout:
-  probability_per_epoch: null
-  mean_duration_s: null
-rate_hz: null
-note: synthetic cue; says nothing about a real polarisation or magnetic sensor
+# The synthetic heading cue for the simulation study E01 is defined in configs/e01_sim.yaml under "heading".
+# It has noise, an initial bias, a bias random walk, dropout bursts and contamination epochs.
+# The cue is synthetic. It says nothing about a real polarisation or magnetic sensor.
+status: values live in configs/e01_sim.yaml

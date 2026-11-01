@@ -1,9 +1,5 @@
-# Draft v0. Ranges are set only after the pilot. Do not read the null values as decisions.
-levels:
-  D0: {name: clean, parameters: none}
-  D1: {name: mild, brightness_scale: null, blur_sigma_px: null, noise_sigma: null, dropout_prob: null}
-  D2: {name: moderate, brightness_scale: null, blur_sigma_px: null, noise_sigma: null, dropout_prob: null}
-  D3: {name: severe, brightness_scale: null, blur_sigma_px: null, noise_sigma: null, dropout_prob: null}
-  D4: {name: near_blackout, brightness_scale: null, blur_sigma_px: null, noise_sigma: null, dropout_prob: null}
-ranges_set_after: pilot
+# The frozen degradation levels D0 to D4 for the simulation study E01 are in configs/e01_sim.yaml under "levels".
+# They act on the visual measurements (noise multiplier, dropout fraction, outlier probability), not on images.
+# A later image based stage will need its own file with brightness, blur and noise settings, set on a pilot split first.
+status: values live in configs/e01_sim.yaml
 seed_policy: every degradation step takes an explicit integer seed
