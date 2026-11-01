@@ -1,0 +1,68 @@
+{
+ "days": {
+  "2026-03-20": {
+   "min_zenith_deg": 24.97240021445542,
+   "time_min_zenith_h": 12.51666666666664,
+   "minutes_sigma_gt_2": 0,
+   "window_sigma_gt_2": null,
+   "minutes_sigma_gt_5": 0,
+   "window_sigma_gt_5": null,
+   "minutes_sigma_gt_10": 0,
+   "window_sigma_gt_10": null
+  },
+  "2026-06-21": {
+   "min_zenith_deg": 1.0041677774417825,
+   "time_min_zenith_h": 12.399999999999974,
+   "minutes_sigma_gt_2": 146,
+   "window_sigma_gt_2": [
+    11.183333333333312,
+    13.59999999999997
+   ],
+   "minutes_sigma_gt_5": 91,
+   "window_sigma_gt_5": [
+    11.649999999999977,
+    13.14999999999997
+   ],
+   "minutes_sigma_gt_10": 64,
+   "window_sigma_gt_10": [
+    11.866666666666642,
+    12.91666666666664
+   ]
+  },
+  "2026-09-22": {
+   "min_zenith_deg": 23.755638582220588,
+   "time_min_zenith_h": 12.249999999999975,
+   "minutes_sigma_gt_2": 0,
+   "window_sigma_gt_2": null,
+   "minutes_sigma_gt_5": 0,
+   "window_sigma_gt_5": null,
+   "minutes_sigma_gt_10": 0,
+   "window_sigma_gt_10": null
+  },
+  "2026-12-21": {
+   "min_zenith_deg": 47.87220117775699,
+   "time_min_zenith_h": 12.333333333333307,
+   "minutes_sigma_gt_2": 0,
+   "window_sigma_gt_2": null,
+   "minutes_sigma_gt_5": 0,
+   "window_sigma_gt_5": null,
+   "minutes_sigma_gt_10": 0,
+   "window_sigma_gt_10": null
+  }
+ },
+ "june21_if_dop_doubled": {
+  "minutes_sigma_gt_2": 103,
+  "minutes_sigma_gt_5": 64,
+  "minutes_sigma_gt_10": 45
+ },
+ "model_zenith_dop_at_elevation": {
+  "35": 0.3029413800761018,
+  "70": 0.037273414121570536
+ },
+ "year_2026": {
+  "days_with_sigma_gt_10": 89,
+  "first": "2026-05-09",
+  "last": "2026-08-05",
+  "max_minutes": 65
+ }
+}
