@@ -18,6 +18,7 @@ Purpose: list the closest prior work and state, for each, what it already does a
 | N-012 | Emulating insect brains, arXiv 2401.00473 | Path integration network on BrainScaleS 2, 1.0 percent return error after optimisation | Low. Same biological premise | Neuromorphic implementation in a virtual agent | Yes, summary |
 | N-013 | Home vector direction learning, arXiv 2405.03827 | CNN learns home direction, odometry plus learned correction, assumes a heading source | Low. Assumes the heading cue we study | Visual homing, not drift reduction of estimator | Yes, summary |
 | N-014 | Insect navigation as reinforcement learning, arXiv 2406.01501 | Survey style framework on insect navigation | Low | No fusion design | Yes, abstract |
+| N-015 | AMO-HEAD, arXiv 2510.10979 | Adaptive heading estimation for UAVs. Inflates the magnetometer noise in two steps from a chi square test of the residual. Inflation factors tuned on a validation set from the test environment. No significance test found in the text | High for the adaptive weighting of a heading cue | Magnetometer and inertial only, no camera, no graded visual degradation, no consistency metric | Yes, full text |
 
 Not opened, so no claim made about them: Stone et al. 2017 (bee path integration model), Dupeyroux et al. IROS 2017, QA-MSCKF, and the 34 works listed in docs/novelty_screening_log.md.
 
@@ -28,3 +29,19 @@ Reliability aware weighting of a heading cue inside a visual inertial filter, ev
 ## Rule
 
 A novelty claim requires a row for each of the closest works we opened, with the difference stated in one sentence.
+
+## Audit result (task M1, reviewed by the lead author)
+
+Status: proposed, not decided. The author who owns task M1 is asked to confirm or correct it.
+
+Method: 48 works were screened (docs/novelty_screening_log.md). 14 were opened and 34 were not. A claim is made only about opened works.
+
+Finding. No opened work combines all three of these: (a) a heading cue inside a visual inertial filter, (b) weighting of that cue by its estimated reliability, and (c) a graded visual degradation protocol with a fixed primary metric, paired statistics and a consistency metric. Parts (a) and (b) are covered separately by N-001, N-002, N-003, N-004 and N-015. Part (c) is covered separately by N-008 and N-009.
+
+Narrowed gap statement: a preregistered, controlled comparison of a heading cue with and without reliability weighting, inside a visual inertial filter, under graded visual degradation, reported with drift ratio, paired tests and NEES.
+
+What this does not support: a claim of a new estimator. Innovation based weighting of a heading cue is established practice (N-015, and the covariance matching literature in docs/literature/B_estimation.md). The contribution is the controlled evaluation.
+
+Protocol changes proposed by the audit, and where they went: add a fixed noise baseline with an outlier gate (B1g) so that adaptation can be separated from outlier rejection (done in docs/experiment_protocol_v0.1.md); report NEES and coverage (done); tune nothing on the held out split (done).
+
+Limit of the audit: 34 screened works were not opened, and a gap in the opened set does not prove a gap in the literature.
