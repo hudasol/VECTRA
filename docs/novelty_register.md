@@ -19,6 +19,10 @@ Purpose: list the closest prior work and state, for each, what it already does a
 | N-013 | Home vector direction learning, arXiv 2405.03827 | CNN learns home direction, odometry plus learned correction, assumes a heading source | Low. Assumes the heading cue we study | Visual homing, not drift reduction of estimator | Yes, summary |
 | N-014 | Insect navigation as reinforcement learning, arXiv 2406.01501 | Survey style framework on insect navigation | Low | No fusion design | Yes, abstract |
 | N-015 | AMO-HEAD, arXiv 2510.10979 | Adaptive heading estimation for UAVs. Inflates the magnetometer noise in two steps from a chi square test of the residual. Inflation factors tuned on a validation set from the test environment. No significance test found in the text | High for the adaptive weighting of a heading cue | Magnetometer and inertial only, no camera, no graded visual degradation, no consistency metric | Yes, full text |
+| N-016 | Zhang et al. 2022, Sensors 22(9) 3372 | Ship inertial, polarisation and magnetometer system. Upper and lower DoP thresholds give the compass full weight, blend its noise, or switch it out | High for DoP based weighting | Piecewise thresholds, simulation of a ship, no camera, no solar geometry | Yes, full text |
+| N-017 | Steidle et al. 2019, IMAV | Polarisation compass in a visual inertial EKF on a micro aerial vehicle, removes yaw drift | High for compass plus visual inertial fusion | Aerial, no DoP weighting stated in the abstract, no graded degradation | Yes, abstract |
+| N-018 | Chu et al. 2023, Laser Optoelectron. Prog. 60(7) | Polarisation sensor with monocular visual inertial navigation on a road vehicle, heading accuracy up 23.4 percent over 2 km | High for compass plus VIO on a ground vehicle | Monocular, weighting not stated in the abstract, no degradation study | Yes, abstract |
+| N-019 | Liang et al. arXiv 2012.09154; Hu et al. 2022, Sensors 22(3) 710 | Yaw cannot be estimated when the sun is at the zenith; the sun vector projection vanishes near the zenith | High for the near zenith failure | Theory and simulation, no time resolved low latitude outage window | Yes, full text |
 
 Not opened, so no claim made about them: Stone et al. 2017 (bee path integration model), Dupeyroux et al. IROS 2017, QA-MSCKF, and the 34 works listed in docs/novelty_screening_log.md.
 
@@ -45,3 +49,7 @@ What this does not support: a claim of a new estimator. Innovation based weighti
 Protocol changes proposed by the audit, and where they went: add a fixed noise baseline with an outlier gate (B1g) so that adaptation can be separated from outlier rejection (done in docs/experiment_protocol_v0.1.md); report NEES and coverage (done); tune nothing on the held out split (done).
 
 Limit of the audit: 34 screened works were not opened, and a gap in the opened set does not prove a gap in the literature.
+
+## Update for E02 (2026-11-01)
+
+The E02 estimator B3 sets the compass noise from the measured degree of polarisation with a continuous law and a chi square gate. N-016 already weights a polarisation compass by DoP in piecewise form, so B3 is presented as a continuous variant of that idea, not as a first. Compass plus visual inertial fusion exists (N-017, N-018). Near zenith failure is known in theory (N-019). What the opened literature does not show is a time resolved outage window for a zenith compass at Gulf latitude, combined with an image based degradation study on a ground robot. Full notes: docs/literature/E_polarisation_compass.md.
