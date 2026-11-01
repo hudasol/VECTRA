@@ -25,3 +25,11 @@ Each must be stated at the simulation tier and must cite a row in docs/results_r
 6. In the simulation all filters are inconsistent (NEES far above 2).
 7. The TartanAir documentation describes a noise free IMU derived from the pose. If TartanGround does the same, an image stage must add an IMU noise model.
 8. A drifting cue bias defeated every heading aided system in the sensitivity grid.
+
+## Study 2 (E02), added 2026-11-01
+
+May claim, at the rendered scene and simulated compass tier, citing R-006: a simulated zenith compass lowers heading RMSE by about an order of magnitude and drift by a quarter to a half at D3 and D4; B3 beats B1g on drift and heading at every level; B2 is slightly better than B3 overall; B3a raises coverage but every filter remains overconfident. Citing R-008: the model predicts a noon blind window over Abu Dhabi on 89 days of 2026.
+
+May not claim: that a real polarisation sensor behaves this way; that the scenes reproduce real Gulf imagery or dust; that B4 is better than B2 (exploratory only); anything about trajectories longer than 200 s.
+
+Known limitations: rendered images; the scene lighting does not match the compass sun; the Rayleigh zenith DoP near the zenith is below a measured desert value, so the blind window may be overstated, while aerosol may widen it; left depth used for both cameras in the haze model; loosely coupled visual odometry; overconfident filter.
