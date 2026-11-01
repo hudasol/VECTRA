@@ -1,0 +1,62 @@
+# E02 image based study configuration (draft until the protocol v0.2 freeze).
+# Values marked (pilot) are set on the pilot split only. Values marked (assumed) are
+# modelling assumptions with the source or reason given in docs/experiment_protocol_v0.2.md.
+version: "v0.2-draft"
+data:
+  repo: theairlabcmu/TartanGround
+  base_url: https://huggingface.co/datasets/theairlabcmu/TartanGround/resolve/main
+  pilot: [WesternDesertTown]
+  heldout: [DesertGasStation, MiddleEast, EndofTheWorld]
+  excluded: [DesertGasStation/Data_omni/P0000]   # used to debug the VO code before the pilot
+  max_frames: 2000
+  image_size: 320
+  baseline_m: 0.25
+camera:                       # (assumed)
+  airlight: 0.6
+  max_range_m: 2000
+  texp_base_s: 0.005
+  texp_max_s: 0.02
+  blur_base_px: 1.0
+  full_well_e: 4000
+  read_noise_e: 6
+  drop_mean_burst_s: 0.5
+levels:                       # (pilot)
+  D0: {}
+  D1: {gain: 0.5, visibility_m: 1000, glare: 0.02, drop_frac: 0.02}
+  D2: {gain: 0.2, visibility_m: 200, glare: 0.05, drop_frac: 0.05}
+  D3: {gain: 0.07, visibility_m: 60, glare: 0.10, drop_frac: 0.10}
+  D4: {gain: 0.025, visibility_m: 20, glare: 0.20, drop_frac: 0.20}
+degradation_seeds: 1
+imu:                          # noise added to the noise free dataset IMU (assumed, same family as E01)
+  rate_hz: 100
+  gyro_noise_density: 0.002
+  accel_noise_density: 0.02
+  gyro_bias_init_sigma: 0.002
+  gyro_bias_rw: 0.0001
+  accel_bias_init_sigma: 0.02
+  accel_bias_rw: 0.001
+filter:
+  vo_sigma: [0.05, 0.05, 0.005]   # (pilot) forward, right m/s and yaw rate rad/s
+  vo_gate_chi2_3dof: 11.34
+  heading_nominal_sigma_deg: 1.0  # fixed noise for B1, B1g and the B2 floor
+  heading_gate_chi2_1dof: 6.63
+  b2_window: 3
+  vo_nis_window: 20               # (pilot) B3a
+  failure_drift_ratio_pct: 10.0
+compass:                          # zenith polarisation compass (assumed)
+  rate_hz: 5
+  d_max: 0.6
+  floor_deg: 0.5
+  c_deg: 0.05
+  dop_meas_sigma: 0.002
+  sample_loss: 0.0
+sky:
+  location: {name: Abu Dhabi, lat_deg: 24.4539, lon_deg: 54.3773, utc_offset_h: 4}
+  conditions:
+    clear: {dop_factor: 1.0}
+    haze: {dop_factor: 0.6}
+    dust: {dop_factor: 0.3}
+    cloud: {dop_factor: 1.0, cloud_frac: 0.35, cloud_mean_s: 30.0, cloud_dop_scale: [0.05, 0.3], cloud_aop_extra_deg: 10.0}
+  dates: ["2026-06-21", "2026-12-21"]
+  start_times: ["07:30", "09:30", "11:45", "12:30", "14:30", "16:30"]
+filter_seeds: 2
