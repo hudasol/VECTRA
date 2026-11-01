@@ -87,3 +87,12 @@ def test_filter_noise_free_tracks_truth_and_b0_ignores_cue():
     assert abs(out[-1, 0] - 29.9) < 0.2 and abs(out[-1, 1]) < 0.05
     out4, _, nu4, ng4 = run_filter(4, 0.01, gyro, acc, vo_idx, ok, vf, z0, z0, *common)
     assert nu4 + ng4 == len(ci)
+
+
+def test_sun_matches_independent_reference():
+    """Solar zenith angles from the astral package (computed once, 2026-11-01) for Abu Dhabi, local time UTC+4."""
+    ref = {"2026-06-21T08:00": 59.74, "2026-06-21T12:00": 5.64, "2026-06-21T12:30": 1.65, "2026-06-21T16:30": 55.63,
+           "2026-12-21T08:00": 79.14, "2026-12-21T12:15": 47.89, "2026-12-21T16:00": 71.53}
+    for s, z_ref in ref.items():
+        z, _ = sun_position(*AD, datetime.fromisoformat(s) - timedelta(hours=4))
+        assert abs(z - z_ref) < 0.2, (s, z, z_ref)
