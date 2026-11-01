@@ -2,7 +2,7 @@
 
 Vector based Estimation and Cognition for Terrain Robotics and Autonomy (provisional name).
 
-Status: private working repository, early planning stage. No experiment has been run and no result is reported here.
+Status: private working repository. The simulation study E01 has been run on synthetic trajectories with a synthetic heading cue (see docs/results_register.md). No image based experiment and no real sensor test has been run.
 
 ## Purpose
 
@@ -12,12 +12,12 @@ We study whether a robot that uses a compass like heading cue, in the way desert
 
 Under controlled visual degradation, does a reliability aware fusion of a heading cue reduce drift in a ground rover estimate compared with (B0) visual inertial only and (B1) heading aided fusion with fixed noise?
 
-The question, hypotheses, metrics and statistics are written in docs/experiment_protocol.md. That document is a draft and is not frozen.
+The question, hypotheses, metrics and statistics for the simulation study are written in docs/experiment_protocol_v0.1.md, which is frozen (tag protocol-v0.1-frozen). The earlier draft is docs/experiment_protocol.md.
 
 ## Scope
 
 - First platform: a simulated ground rover. A drone is considered only after the rover study is complete.
-- First experiment (E01): TartanGround sequences with controlled degradation levels D0 to D4 and a synthetic heading cue derived from ground truth.
+- First experiment (E01): a simulated planar rover with controlled degradation levels D0 to D4 applied to the visual measurements and a synthetic heading cue. A TartanGround image stage is planned and has not been run.
 - The heading cue in E01 is synthetic. Results from E01 say nothing about a real polarisation sensor.
 - This repository is a proposal seed and not a deployed system. It carries no endorsement from any organisation.
 
@@ -25,8 +25,13 @@ The question, hypotheses, metrics and statistics are written in docs/experiment_
 
 | Path | Content |
 | --- | --- |
-| docs/ | Charter, registers, protocol draft, feasibility note, memos |
-| configs/ | Baseline, degradation and heading reference settings |
+| docs/ | Charter, registers, protocols, feasibility note, memos, literature notes in docs/literature |
+| src/vectra/ | Trajectories, sensors, estimators and evaluation for E01 |
+| experiments/E01/ | Run, sensitivity and analysis scripts |
+| results/ | Output files of the runs registered in docs/results_register.md |
+| tests/ | Unit tests |
+| paper/ | Draft paper, figure and table scripts |
+| configs/ | Frozen E01 settings in e01_sim.yaml, plus pointer files |
 | data/ | README only. Datasets are never committed |
 | src/ | Adapters, degradation, estimators, evaluation (empty until implemented) |
 | tests/ | Tests (empty until implemented) |
