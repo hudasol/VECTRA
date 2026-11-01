@@ -107,6 +107,92 @@ def fig_frames():
     fig.tight_layout(pad=0.2); fig.savefig(O / "fig_frames.pdf", dpi=300); fig.savefig(O / "fig_frames.png", dpi=200); plt.close(fig)
 
 
+
+STY = {"B0": ("0.55", "s", ":"), "B1": ("0.0", "o", "--"), "B1g": ("tab:blue", "^", "-"),
+       "B2": ("tab:green", "v", "-."), "B3": ("tab:red", "D", "-"), "B3a": ("#8a3b5c", "P", "--")}
+LV = ["D0", "D1", "D2", "D3", "D4"]
+
+
+def _held():
+    import pandas as pd
+    return pd.read_csv(ROOT / "results" / "e02_heldout.csv" if (ROOT / "results" / "e02_heldout.csv").exists() else ROOT / "results" / "e02_heldout.csv.gz")
+
+
+def fig_e02_main():
+    df = _held()
+    per = df.groupby(["traj", "level", "estimator"]).agg(dr=("drift_pct", "mean"), h=("head_rmse_deg", "mean")).reset_index()
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(7.1, 2.3))
+    for e, (c, m, l) in STY.items():
+        x = np.arange(5) + (list(STY).index(e) - 2.5) * 0.06
+        for ax, col in ((a1, "dr"), (a2, "h")):
+            g = per[per.estimator == e].groupby("level")[col]
+            med = g.median().loc[LV]; lo = g.quantile(.25).loc[LV]; hi = g.quantile(.75).loc[LV]
+            ax.errorbar(x, med, yerr=[med - lo, hi - med], color=c, marker=m, ls=l, ms=3, lw=1, capsize=1.2, label=e)
+    from matplotlib.ticker import ScalarFormatter, NullFormatter
+    for a in (a1, a2):
+        a.set_xticks(range(5)); a.set_xticklabels(LV); a.set_xlabel("Degradation level"); a.grid(alpha=.25, lw=.4); a.set_yscale("log")
+        a.yaxis.set_major_formatter(ScalarFormatter()); a.yaxis.set_minor_formatter(NullFormatter())
+    a1.set_yticks([0.5, 1, 2, 5, 10]); a2.set_yticks([0.2, 0.5, 1, 2, 5, 10])
+    a1.set_ylabel("Drift ratio (%)"); a2.set_ylabel("Heading RMSE (deg)")
+    a1.legend(fontsize=6.5, frameon=False, ncol=3, loc="upper left")
+    fig.tight_layout(); fig.savefig(O / "fig_e02_main.pdf"); fig.savefig(O / "fig_e02_main.png", dpi=200); plt.close(fig)
+
+
+def fig_envelope():
+    df = _held()
+    times = cfg["sky"]["start_times"]
+    fig, axs = plt.subplots(1, 4, figsize=(7.1, 2.25), sharey=True)
+    for ax, sky in zip(axs, ["clear", "haze", "dust", "cloud"]):
+        for e in ["B0", "B1", "B1g", "B2", "B3", "B3a"]:
+            c, m, l = STY[e]
+            g = df[(df.sky == sky) & (df.date == "2026-06-21") & (df.estimator == e)].groupby("time").head_rmse_deg.mean()
+            ax.plot(range(len(times)), g.loc[times].values, color=c, marker=m, ls=l, ms=3, lw=1, label=e)
+        ax.set_xticks(range(len(times))); ax.set_xticklabels(times, rotation=60, fontsize=6)
+        ax.set_yscale("log"); ax.grid(alpha=.25, lw=.4); ax.set_title(f"21 June, {sky}", fontsize=7.5)
+    axs[0].set_ylabel("Mean heading RMSE (deg)")
+    h, l_ = axs[0].get_legend_handles_labels()
+    fig.legend(h, l_, loc="upper center", ncol=6, fontsize=6.5, frameon=False)
+    fig.tight_layout(pad=0.3, rect=(0, 0, 1, 0.9)); fig.savefig(O / "fig_envelope.pdf"); fig.savefig(O / "fig_envelope.png", dpi=200); plt.close(fig)
+
+
+def fig_traj():
+    """One held out trajectory at level D3, June 12:30 and 09:30, clear sky, filter seed 0."""
+    sys.path.insert(0, str(ROOT / "experiments" / "E02"))
+    import run_filters as rf
+    from vectra.filter2 import run_filter
+    from vectra.sky import compass_cue
+    f = sorted(rf.VO_DIR.glob("MiddleEast__Data_omni__*.npz"))[0]
+    z = np.load(f); x, y, yaw = z["x"], z["y"], z["yaw"]
+    nimu = min(len(z["gyro"]), 10 * len(x)); nfr = nimu // 10; dt = 0.01
+    im, co, fl = cfg["imu"], cfg["compass"], cfg["filter"]
+    vo = z["D3_s0"][:nfr]
+    cue_idx = np.arange(0, nimu, 20); t_cue = cue_idx * dt
+    yaw_i = np.interp(t_cue, np.arange(nfr) * 0.1, np.unwrap(yaw[:nfr]))
+    g, a = rf.noisy_imu(z["gyro"][:nimu], z["acc"][:nimu], im, dt, np.random.default_rng(rf.seed_of("imu", f.stem, "D3_s0", 0)))
+    p0 = np.array([1e-4, 1e-4, 1e-6, 4.0, 4.0, im["gyro_bias_init_sigma"] ** 2] + [im["accel_bias_init_sigma"] ** 2] * 2)
+    x0 = np.array([x[0], y[0], yaw[0], (x[1] - x[0]) / 0.1, (y[1] - y[0]) / 0.1, 0.0, 0.0, 0.0])
+    scen = rf.scenarios(cfg)
+    fig, axs = plt.subplots(1, 2, figsize=(7.1, 2.35))
+    for ax, tm in zip(axs, ["09:30", "12:30"]):
+        sc = {"local_start": f"2026-06-21T{tm}", "sky": "clear"}
+        si = next(i for i, s in enumerate(scen) if s["date"] == "2026-06-21" and s["time"] == tm and s["sky"] == "clear")
+        cue = compass_cue(t_cue, yaw_i, sc, cfg["sky"], co, np.random.default_rng(rf.seed_of("cue", f.stem, "D3_s0", si, 0)))
+        ax.plot(x[:nfr], y[:nfr], color="k", lw=1.6, label="Ground truth")
+        for e in ["B0", "B1", "B1g", "B3"]:
+            out, _, _, _ = run_filter(rf.ESTIMATORS[e], dt, g, a, np.arange(nfr) * 10, vo[:, 0] > 0, vo[:, 1], vo[:, 2], vo[:, 3],
+                                      cue_idx, cue["valid"], cue["z"], cue["d_meas"], x0, p0, im["gyro_noise_density"],
+                                      im["accel_noise_density"], im["gyro_bias_rw"], im["accel_bias_rw"], np.array(fl["vo_sigma"]) ** 2,
+                                      fl["vo_gate_chi2_3dof"], np.radians(fl["heading_nominal_sigma_deg"]), fl["heading_gate_chi2_1dof"],
+                                      int(fl["b2_window"]), np.radians(co["c_deg"]), np.radians(co["floor_deg"]), int(fl["vo_nis_window"]))
+            c, m, l = STY[e]
+            ax.plot(out[:, 0], out[:, 1], color=c, ls=l, lw=1, label=e)
+        ax.set_aspect("equal", adjustable="datalim"); ax.grid(alpha=.25, lw=.4)
+        ax.set_title(f"D3, 21 June {tm}, clear sky (sun zenith {np.mean(cue['zen']):.0f} deg)", fontsize=7.5)
+        ax.set_xlabel("North (m)"); ax.set_ylabel("East (m)")
+    axs[0].legend(fontsize=6, frameon=False)
+    fig.tight_layout(); fig.savefig(O / "fig_traj.pdf"); fig.savefig(O / "fig_traj.png", dpi=200); plt.close(fig)
+
+
 if __name__ == "__main__":
     which = sys.argv[1:] or ["sky"]
     for w in which:

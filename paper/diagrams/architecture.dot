@@ -9,7 +9,7 @@ digraph G {
   imun [label="IMU noise model\nwhite noise, bias walks"];
   subgraph cluster_sky { label="Sky compass model (Abu Dhabi)"; fontname="Times-Bold"; fontsize=11; color="#bbbbbb"; style="rounded,dashed";
     sun [label="Sun ephemeris\n(NOAA equations)"]; ray [label="Rayleigh zenith\npolarisation"]; atm [label="Haze, dust,\nbroken cloud"]; comp [label="Zenith compass\nheading mod 180,\nmeasured DoP"]; sun -> ray -> comp; atm -> comp; }
-  w [label="Cue weighting\nB1 fixed, B1g gated,\nB2 covariance matching,\nB3 DoP informed + gate"];
+  w [label="Cue weighting\nB1 fixed, B1g gated,\nB2 covariance matching,\nB3 DoP informed + gate,\nB3a B3 + adaptive visual noise"];
   ekf [label="8 state EKF\nposition, yaw, velocity,\ngyro and accel biases"];
   met [label="Metrics and tests\ndrift ratio, NEES,\nWilcoxon, Holm"];
   stereo -> degr; depth -> degr; degr -> vo -> ekf; imu -> imun -> ekf; comp -> w -> ekf; ekf -> met; gt -> met;
