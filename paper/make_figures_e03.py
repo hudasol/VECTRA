@@ -75,3 +75,37 @@ if __name__ == "__main__":
     what = sys.argv[1] if len(sys.argv) > 1 else "all"
     if what in ("sky", "all"):
         sky()
+
+
+def results():
+    import pandas as pd
+    cb = pd.read_csv(R / "e03" / "confirm_by_level.csv")
+    fig, ax = plt.subplots(1, 3, figsize=(7.16, 2.3))
+    lv = ["D0", "D2", "D4"]
+    sets = [("B0", PINK[0], "o"), ("B1", GREY, "x"), ("B2", PINK[3], "s"), ("B3", PINK[1], "^"), ("B4", PINK[2], "D"),
+            ("B4R", "#8e44ad", "v"), ("MAG", "k", "+"), ("W3", "#c27c0e", "*")]
+    for e, c, mk in sets:
+        g = cb[cb.estimator == e].set_index("level").reindex(lv)
+        ax[0].plot(lv, g.head_med, color=c, marker=mk, ms=3.5, lw=1, label=e)
+        ax[1].plot(lv, g.drift_med, color=c, marker=mk, ms=3.5, lw=1, label=e)
+    ax[0].set_yscale("log"); ax[0].set_ylabel("heading RMSE (deg)"); ax[0].set_title("(a) confirmation, heading", fontsize=8)
+    ax[1].set_yscale("log"); ax[1].set_ylabel("drift (% of path)"); ax[1].set_title("(b) confirmation, drift", fontsize=8)
+    ax[1].legend(frameon=False, fontsize=5.5, ncol=2)
+    h = pd.read_csv(R / "e03" / "homing.csv")
+    a = ax[2]
+    for (hd, c, ls) in [("gyro_only", PINK[0], "-"), ("zenith", PINK[1], "-"), ("zenith_tilt_aware", PINK[2], "--"),
+                        ("zenith_ring_tilt_aware", "#8e44ad", "--"), ("magnetometer", "k", ":")]:
+        for sc, mk in [("march_morning", "o"), ("june_noon", "s")]:
+            g = h[(h.heading == hd) & (h.scenario == sc)]
+            a.loglog(g.path_m, g.median_err_m, color=c, ls=ls, marker=mk, ms=3,
+                     label=hd.replace("_", " ") if sc == "march_morning" else None)
+    a.set_xlabel("path length (m)"); a.set_ylabel("homing error (m)")
+    a.set_title("(c) homing, SIMULATED (o March, s June)", fontsize=8)
+    a.legend(frameon=False, fontsize=5)
+    fig.tight_layout()
+    fig.savefig(F / "fig_e03_results.pdf")
+    print("results figure")
+
+
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] in ("results", "all"):
+    results()
