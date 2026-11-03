@@ -33,3 +33,18 @@ May claim, at the rendered scene and simulated compass tier, citing R-006: a sim
 May not claim: that a real polarisation sensor behaves this way; that the scenes reproduce real Gulf imagery or dust; that B4 is better than B2 (exploratory only); anything about trajectories longer than 200 s.
 
 Known limitations: rendered images; the scene lighting does not match the compass sun; the Rayleigh zenith DoP near the zenith is below a measured desert value, so the blind window may be overstated, while aerosol may widen it; left depth used for both cameras in the haze model; loosely coupled visual odometry; overconfident filter.
+
+## Study 3 (E03), added 2026-11-03
+
+May claim (with the stated labels):
+- In a frozen confirmation on 15 unseen RENDERED trajectories with a SIMULATED compass that has bias, dust coupled to the image visibility and a noise model the filter does not know, DoP weighted compass fusion lowered heading RMSE several fold against no compass, and an ungated compass was harmful (R-012).
+- DoP floored covariance matching (B4) is non inferior to covariance matching with a 0.5 degree margin (R-012).
+- No sky polarisation geometry gives heading with the sun at the zenith; a ring of off zenith points shortens the window in the model (R-009).
+- The radiative transfer model is about 15 percent below measured clear sky zenith DoP in Marseille at solar zenith 49 to 83 degrees (R-010, MEASURED).
+
+May not claim:
+- Anything about a real polarisation sensor, a real rover or real dust.
+- That the ring geometry helps a tilted, uncompensated sensor (tilt sensitivity removed the advantage).
+- An order among the weighting schemes B3 to B8 (ranking did not transfer, H7).
+- Consistent covariance (H6 not met).
+- Any kilometre scale result beyond the SIMULATED homing model.

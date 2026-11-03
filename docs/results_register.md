@@ -12,6 +12,14 @@ Every run is recorded here, including failed and negative runs. No row may be de
 | R-006 | 2026-11-01 | E02 held out filters and prespecified tests F1, F2, F3 | configs/e02.yaml frozen | 48 sky scenarios, filter seeds 0 and 1 | daf9d7f, 6ba3a13 | 97,920 runs, none excluded. H1 and H2 supported, H3 rejected (B2 slightly better than B3), H4 half supported (coverage up, drift unchanged) | results/e02_heldout.csv.gz, results/e02_heldout_F1.csv, F2, F3, secondary, envelope |
 | R-007 | 2026-11-01 | E02 exploratory B4 (added after R-006, not prespecified) | configs/e02.yaml frozen | as R-006 | 3262668 | Descriptive only. B2 and B3 reproduce R-006 exactly | results/e02_heldout_explore_B4.csv.gz |
 | R-008 | 2026-11-01 | E02 sky model envelope (model only, no data) | configs/e02.yaml | none | bb01f45 | 89 days in 2026 with compass noise above 10 degrees at some time, up to 65 minutes | results/e02_sky_envelope.json |
+| R-009 | 2026-11-03 | E03 sky model v2 (radiative transfer, SIMULATED; POWER climatology) | configs/e03.yaml | Monte Carlo seeds per table cell | 9f0b5a0 and later | Single scattering limit exact; 21 June window above 10 degrees 97 to 108 minutes (RT), ring 8 to 13, sun sensor 23 | results/e03_sky/ |
+| R-010 | 2026-11-03 | E03 MEASURED sky check, Marseille 29 July 2022 (Poughon et al., CC BY-SA 4.0) | none | none | see git log | Clear sky d_max fit 0.613; RT about 15 percent lower; anchored window 68 minutes | results/e03/measured_marseille_0729.json |
+| R-011 | 2026-11-03 | E03 pilot fits and development selection (34 trajectories, 21 systems) | configs/e03.yaml | seed hashes per stream | faa2131 | S = B4; development ranking recorded | results/e03/dev*.csv*, dev_selection.json |
+| R-012 | 2026-11-03 | E03 confirmation (15 unseen trajectories, protocol v0.3, tag protocol-v0.3-frozen) | configs/e03.yaml frozen | 3 degradation seeds, 16 scenarios, 2 IMU draws | 6743b1b | 63,840 runs, none excluded. H1, H2, H3, H3b, H4, H5 supported; H6 and H7 not met | results/e03/confirm*.csv*, confirm_tests.csv, confirm_summary.json |
+| R-013 | 2026-11-03 | E03 secondary: uncoupled sky, measured anchored sky, tilt sensitivity (deviation), variance components | configs/e03.yaml | as R-012, one IMU draw | 6743b1b | Coupling halves the D4 benefit; tilt removes the ring advantage | results/e03/confirm_uncoupled*, confirm_anchored*, confirm_tilt*, variance_components.json |
+| R-014 | 2026-11-03 | E03 SIMULATED homing (300 paths per case, to 3 km) | experiments/E03/homing.py | seed 7 | see git log | Tilt aware zenith compass 54 m at 3 km (March morning), 989 m across the June noon window | results/e03/homing.csv |
+
+Status on 2026-11-03: Study 3 (E03) has been run (R-009 to R-014); deviations are listed in docs/DECISIONS_S3.md and the paper.
 
 Status on 2026-11-01: Study 1 (E01, surrogate) and Study 2 (E02, rendered TartanGround desert scenes with a simulated sky compass) have been run. No real sensor or field test has been run.
 
