@@ -1,0 +1,27 @@
+{
+ "features": [
+  "log measured DoP",
+  "cos solar zenith",
+  "log gyro inconsistency of successive readings"
+ ],
+ "label": "|compass error| > 3 sqrt(r_est)",
+ "mean": [
+  -4.237945081543339,
+  0.7795812686514685,
+  -2.960749579963973
+ ],
+ "scale": [
+  1.5174690900756143,
+  0.1546758023641063,
+  1.7021446608962516
+ ],
+ "coef": [
+  1.4281036154286195,
+  0.5820723751548504,
+  0.7449461477749143
+ ],
+ "intercept": -0.22512867691907057,
+ "n_samples": 505104,
+ "positive_share": 0.16448493775539294,
+ "holdout_auc_pilot": 0.7008154799297514
+}

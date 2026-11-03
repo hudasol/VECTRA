@@ -32,7 +32,7 @@ def sky():
     for i, (k, c) in enumerate(zip([0, 2, 4, 6, 8], PINK)):
         a.plot(zen, dop[k, :, 0], color=c, lw=1.2, label=f"RT, AOD {aod[k]:g}")
     a.add_patch(plt.Rectangle((53, 0.24), 4, 0.06, color="k", alpha=0.25, lw=0))
-    a.plot([20], [0.08], "k^", ms=4, label="measured [desert]")
+    a.plot([20], [0.08], "k^", ms=4, label="measured, Tunisian desert")
     a.set_xlabel("solar zenith (deg)")
     a.set_ylabel("zenith DoP")
     a.legend(frameon=False, fontsize=5.5, loc="upper left")
