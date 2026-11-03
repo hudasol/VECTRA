@@ -62,3 +62,33 @@ def test_filter3_reduces_to_filter2_when_extra_states_are_inert():
                                   0.0, 5.0, rvo, 0.0, 11.34, np.radians(1.0), 6.63, 3, 1.0, 0.1, 1.345, 0)
     assert nu2 == nu3 and ng2 == ng3
     assert np.allclose(o2[:, :3], o3[:, :3], atol=1e-9)
+
+
+def test_compass_cue3_reproducible_and_dust_lowers_dop():
+    from vectra.compass3 import SkyTable, compass_cue3
+    root = Path(__file__).resolve().parents[1]
+    tab = SkyTable(root / "results/e03_sky/dop_tables.npz")
+    sensor = dict(floor_deg=0.5, c_deg=0.05, dop_meas_sigma=0.002, bias_sigma_deg=1.0, bias_rw_deg_sqrt_s=0.01,
+                  tilt_sigma_deg=2.0, tilt_tau_s=20.0, cloud_frac=0.35, cloud_mean_s=30.0, cloud_dop_scale=[0.05, 0.3],
+                  cloud_aop_extra_deg=10.0)
+    t = np.arange(0, 60, 0.2)
+    yaw = np.linspace(-1, 1, len(t))
+    sc = dict(local_start="2026-03-21T09:30", aod=0.4, cloud=False, lat=24.45, lon=54.38, utc=4)
+    a = compass_cue3(t, yaw, sc, tab, sensor, np.random.default_rng(1))
+    b = compass_cue3(t, yaw, sc, tab, sensor, np.random.default_rng(1))
+    assert np.array_equal(a["z"], b["z"])
+    d = compass_cue3(t, yaw, dict(sc, aod=6.0), tab, sensor, np.random.default_rng(1))
+    assert np.median(d["d_true"]) < 0.5 * np.median(a["d_true"])
+
+
+def test_cluster_bootstrap_interval_contains_median():
+    import importlib.util
+    root = Path(__file__).resolve().parents[1]
+    spec = importlib.util.spec_from_file_location("an", root / "experiments/E03/analyze_e03.py")
+    an = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(an)
+    rng = np.random.default_rng(0)
+    d = rng.normal(1.0, 0.5, 30)
+    env = np.repeat(["a", "b", "c"], 10)
+    lo, hi = an.cluster_boot_median(d, env, n_boot=2000)
+    assert lo < np.median(d) < hi
