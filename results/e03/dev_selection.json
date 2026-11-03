@@ -1,0 +1,50 @@
+{
+ "rule": "lowest mean over D0, D2, D4 of the median trajectory heading RMSE among B4 to B8; ties within 0.05 degrees go to the first of B4, B6, B5, B7, B8",
+ "scores": {
+  "B4": 2.6051,
+  "B6": 2.6801,
+  "B5": 2.7252,
+  "B7": 2.9989,
+  "B8": 2.6509
+ },
+ "selected": "B4",
+ "dev_ranking": [
+  "B4",
+  "B4R",
+  "B8",
+  "B2",
+  "B6",
+  "B3L",
+  "B5",
+  "B3",
+  "B3C",
+  "B7",
+  "B3R",
+  "B1g",
+  "B0",
+  "B1"
+ ],
+ "dev_scores_all": {
+  "B0": 5.3026,
+  "B1": 9.6268,
+  "B1g": 3.9354,
+  "B2": 2.6722,
+  "B3": 2.728,
+  "B3C": 2.7883,
+  "B3L": 2.711,
+  "B3R": 3.4716,
+  "B4": 2.6051,
+  "B4R": 2.6456,
+  "B5": 2.7252,
+  "B6": 2.6801,
+  "B7": 2.9989,
+  "B8": 2.6509,
+  "MAG": 2.5777,
+  "ORH": 0.138,
+  "ORT": 5.9887,
+  "SUN": 0.5278,
+  "W0": 6.0725,
+  "W3": 3.8335,
+  "W4R": 3.5551
+ }
+}

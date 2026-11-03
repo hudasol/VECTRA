@@ -49,7 +49,9 @@ One ten state filter (src/vectra/filter3.py): the Study 2 eight states plus a co
 | SUN, MAG | B3 style update with the sun sensor or the magnetometer |
 | W0, W3, W4R | Simulated wheel odometry (scale 2 percent, slip epochs) instead of VO, with no compass, the zenith compass (B3) or the ring compass (B4) |
 
-Selection on the development split (before the confirmation run): S is the system among B4 to B8 with the lowest mean over D0, D2 and D4 of the median trajectory heading RMSE. Ties within 0.05 degrees go to the simpler system in the order B4, B6, B5, B7, B8.
+Selection result (development split, results/e03/dev_selection.json, recorded at the freeze): S = B4.
+
+Selection rule on the development split (before the confirmation run): S is the system among B4 to B8 with the lowest mean over D0, D2 and D4 of the median trajectory heading RMSE. Ties within 0.05 degrees go to the simpler system in the order B4, B6, B5, B7, B8.
 
 ## 5. Metrics
 
