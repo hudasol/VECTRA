@@ -113,10 +113,12 @@ def main():
     T = int(CHECK[-1] / SPEED) + 10
     rows = []
     for start, label in [("2026-03-21T08:00", "march_morning"), ("2026-06-21T11:00", "june_noon")]:
-        for src, mode, geo in [("gyro_only", 0, "zenith"), ("zenith", 1, "zenith"), ("zenith_ring", 2, "ring"),
-                               ("magnetometer", 3, "zenith")]:
+        for src, mode, geo, aware in [("gyro_only", 0, "zenith", 0), ("zenith", 1, "zenith", 0),
+                                      ("zenith_ring", 2, "ring", 0), ("zenith_tilt_aware", 1, "zenith", 1),
+                                      ("zenith_ring_tilt_aware", 2, "ring", 1), ("magnetometer", 3, "zenith", 0)]:
             s, tilt, zen = sigma_series(table, start, 0.45, T, geo)
-            err = run_paths(300, T, s, s, tilt, mode, 7, 0.002, 1e-4, 0.002, 0.02, 0.1, 0.01 * DEG, 2 * DEG, 3 * DEG)
+            s_est = np.sqrt(s ** 2 + tilt ** 2) if aware else s      # tilt aware: noise model includes a 2 degree tilt
+            err = run_paths(300, T, s, s_est, tilt, mode, 7, 0.002, 1e-4, 0.002, 0.02, 0.1, 0.01 * DEG, 2 * DEG, 3 * DEG)
             for ci, L in enumerate(CHECK):
                 rows.append({"scenario": label, "heading": src, "path_m": L, "median_err_m": float(np.median(err[:, ci])),
                              "p90_err_m": float(np.quantile(err[:, ci], 0.9)),

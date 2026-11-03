@@ -1,0 +1,50 @@
+{
+ "june_noon|gyro_only": {
+  "exponent": 1.4607515894169334,
+  "err_at_10km_m_extrapolated": 16891.343651422954
+ },
+ "june_noon|magnetometer": {
+  "exponent": 0.8507007756121634,
+  "err_at_10km_m_extrapolated": 263.4050044032329
+ },
+ "june_noon|zenith": {
+  "exponent": 1.27115129548804,
+  "err_at_10km_m_extrapolated": 2147.445289672026
+ },
+ "june_noon|zenith_ring": {
+  "exponent": 1.186340864406125,
+  "err_at_10km_m_extrapolated": 8832.172589640222
+ },
+ "june_noon|zenith_ring_tilt_aware": {
+  "exponent": 1.3719264706351209,
+  "err_at_10km_m_extrapolated": 2194.951563678843
+ },
+ "june_noon|zenith_tilt_aware": {
+  "exponent": 1.4027235112629262,
+  "err_at_10km_m_extrapolated": 2297.4487105439653
+ },
+ "march_morning|gyro_only": {
+  "exponent": 1.4607515894169334,
+  "err_at_10km_m_extrapolated": 16891.343651422954
+ },
+ "march_morning|magnetometer": {
+  "exponent": 0.8507007756121634,
+  "err_at_10km_m_extrapolated": 263.4050044032329
+ },
+ "march_morning|zenith": {
+  "exponent": 1.0893754415781416,
+  "err_at_10km_m_extrapolated": 385.1629462044239
+ },
+ "march_morning|zenith_ring": {
+  "exponent": 1.5927198763520842,
+  "err_at_10km_m_extrapolated": 3760.1571073059245
+ },
+ "march_morning|zenith_ring_tilt_aware": {
+  "exponent": 0.900931494554919,
+  "err_at_10km_m_extrapolated": 173.84425137401257
+ },
+ "march_morning|zenith_tilt_aware": {
+  "exponent": 0.8840866387218266,
+  "err_at_10km_m_extrapolated": 160.45004758860884
+ }
+}
