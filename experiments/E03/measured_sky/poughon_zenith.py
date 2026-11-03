@@ -3,7 +3,7 @@ import numpy as np
 sys.path.insert(0, str(__import__("pathlib").Path(__file__).resolve().parent))
 from safe_npy import load
 a = load(sys.argv[1])
-ann = dict(map(tuple, np.load(sys.argv[2], allow_pickle=True)))   # small annotation array of strings
+ann = dict(map(tuple, load(sys.argv[2])))   # small annotation array of strings, restricted unpickler
 rows = []
 for k in range(a.shape[0]):
     img = a[k, 0].astype(float)
