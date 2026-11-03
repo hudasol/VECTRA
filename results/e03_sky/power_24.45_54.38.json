@@ -1,0 +1,37 @@
+{
+ "url": "https://power.larc.nasa.gov/api/temporal/climatology/point?parameters=AOD_55,CLOUD_AMT&community=RE&longitude=54.3773&latitude=24.4539&format=JSON",
+ "accessed": "2026-11-03",
+ "source": [
+  "SYN1DEG"
+ ],
+ "AOD_55": {
+  "JAN": 0.31,
+  "FEB": 0.41,
+  "MAR": 0.51,
+  "APR": 0.54,
+  "MAY": 0.53,
+  "JUN": 0.56,
+  "JUL": 0.73,
+  "AUG": 0.58,
+  "SEP": 0.43,
+  "OCT": 0.31,
+  "NOV": 0.28,
+  "DEC": 0.3,
+  "ANN": 0.45
+ },
+ "CLOUD_AMT": {
+  "JAN": 43.07,
+  "FEB": 39.74,
+  "MAR": 40.42,
+  "APR": 42.19,
+  "MAY": 28.19,
+  "JUN": 26.64,
+  "JUL": 39.21,
+  "AUG": 34.94,
+  "SEP": 24.31,
+  "OCT": 23.85,
+  "NOV": 34.14,
+  "DEC": 39.77,
+  "ANN": 34.7
+ }
+}
