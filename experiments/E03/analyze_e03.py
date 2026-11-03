@@ -62,7 +62,7 @@ def select(path):
     df = pd.read_csv(path)
     lv = df[df.level.isin(PRIMARY_LEVELS)].groupby(["traj", "level", "estimator"]).head_rmse_deg.mean().reset_index()
     med = lv.groupby(["level", "estimator"]).head_rmse_deg.median().unstack("level")
-    score = med[PRIMARY_LEVELS].mean(1)
+    score = med[PRIMARY_LEVELS].mean(axis=1)
     cands = score.loc[SELECT_ORDER]
     best = cands.min()
     chosen = next(e for e in SELECT_ORDER if cands[e] <= best + 0.05)
@@ -106,7 +106,7 @@ def confirm(path):
     from scipy.stats import kendalltau
     dev = sel["dev_scores_all"]
     lv = lvl.groupby(["traj", "level", "estimator"]).head_rmse_deg.mean().reset_index()
-    cs = lv.groupby(["level", "estimator"]).head_rmse_deg.median().unstack("level")[PRIMARY_LEVELS].mean(1)
+    cs = lv.groupby(["level", "estimator"]).head_rmse_deg.median().unstack("level")[PRIMARY_LEVELS].mean(axis=1)
     common = [e for e in VO_SYSTEMS if e in dev and e in cs.index]
     tau = kendalltau([dev[e] for e in common], [cs[e] for e in common]).statistic
     summary = {"selected_S": S, "H6_consistency": cons, "H6_met": bool(h6), "H7_kendall_tau": float(tau),
