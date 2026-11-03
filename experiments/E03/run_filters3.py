@@ -34,6 +34,8 @@ ESTIMATORS = {
     "B3R": (4, "ring", "vo", 0, 0), "B4R": (6, "ring", "vo", 0, 0), "SUN": (4, "sun", "vo", 0, 0),
     "MAG": (4, "mag", "vo", 0, 0), "W0": (0, "zenith", "wo", 0, 0), "W3": (4, "zenith", "wo", 0, 0),
     "W4R": (6, "ring", "wo", 0, 0),
+    # diagnostics: oracle heading (true yaw, 0.01 degree) and oracle translation (true body velocity, no compass)
+    "ORH": (4, "oracle", "vo", 0, 0), "ORT": (0, "zenith", "votrue", 0, 0),
 }
 VIS = {"D0": None, "D1": 1000.0, "D2": 200.0, "D3": 60.0, "D4": 20.0}
 DIRS = {"dev": "e02_vo", "pilot": "e02_vo", "confirm": "e03_vo", "nondesert": "e03_vo"}
@@ -107,6 +109,9 @@ def process(args):
         roll = np.interp(t_cue, tf, np.unwrap(z["roll"][:nfr]))
         pitch = np.interp(t_cue, tf, np.unwrap(z["pitch"][:nfr]))
         tilt_src = "rendered_terrain"
+    _c, _s = np.cos(yaw[:nfr]), np.sin(yaw[:nfr])
+    _vx, _vy = np.gradient(x[:nfr], 0.1), np.gradient(y[:nfr], 0.1)
+    vtrue = (_c * _vx + _s * _vy, -_s * _vx + _c * _vy)
     x0 = np.array([x[0], y[0], yaw[0], (x[1] - x[0]) / 0.1, (y[1] - y[0]) / 0.1, 0, 0, 0, 0, 0.0])
     rows, feats = [], []
     vo_keys = [k for k in z.files if k.startswith("D") and (not keys or k in keys)]
@@ -129,6 +134,8 @@ def process(args):
                 zc = cues["zenith"]
                 cues["sun"] = sun_sensor_cue(zc["zen"], zc["az"], yaw_cue, co,
                                              np.random.default_rng(seed_of("sun", name, key, si, fs)))
+                cues["oracle"] = {"z": yaw_cue, "r_est": np.full(len(yaw_cue), (0.01 * DEG) ** 2),
+                                  "err": np.zeros(len(yaw_cue))}
                 cues["mag"] = magnetometer_cue(yaw_cue, co, np.random.default_rng(seed_of("mag", name, key, si, fs)))
                 if dump_features:
                     lab = np.abs(zc["err"]) > 3 * np.sqrt(zc["r_est"])
@@ -142,6 +149,9 @@ def process(args):
                     if odo == "vo":
                         ok, vf, vr, vw = vo[:, 0] > 0, vo[:, 1], vo[:, 2], vo[:, 3]
                         r_odo = rvo
+                    elif odo == "votrue":
+                        ok, vf, vr, vw = np.ones(nfr, bool), vtrue[0], vtrue[1], vo[:, 3]
+                        r_odo = np.array([1e-4, 1e-4, rvo[2]])
                     else:
                         ok, vf, vr, vw = np.ones(nfr, bool), wo[0], wo[1], wo[2]
                         wcfg = s3["wheel_odometry"]
@@ -178,7 +188,7 @@ def main():
     ap.add_argument("--split", required=True, choices=list(ENVS))
     ap.add_argument("--out", required=True)
     ap.add_argument("--workers", type=int, default=2)
-    ap.add_argument("--estimators", nargs="*", default=list(ESTIMATORS))
+    ap.add_argument("--estimators", nargs="*", default=[e for e in ESTIMATORS if e not in ("ORH", "ORT")])
     ap.add_argument("--coupling", type=int, default=1)
     ap.add_argument("--draws", type=int, default=None)
     ap.add_argument("--keys", nargs="*", default=[])
