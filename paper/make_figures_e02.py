@@ -87,8 +87,8 @@ def fig_frames():
     import cv2
     from vectra.degrade import Degrader, level_params
     from vectra.vo import StereoVO
-    L = np.load("/home/claude/data/pilot_L.npy", mmap_mode="r"); R = np.load("/home/claude/data/pilot_R.npy", mmap_mode="r")
-    D = np.load("/home/claude/data/pilot_D.npy", mmap_mode="r"); g = np.load("/home/claude/data/pilot_meta.npz")["gyro"]
+    L = np.load(str(Path(__file__).resolve().parents[1] / "data" / "pilot") + "/pilot_L.npy", mmap_mode="r"); R = np.load(str(Path(__file__).resolve().parents[1] / "data" / "pilot") + "/pilot_R.npy", mmap_mode="r")
+    D = np.load(str(Path(__file__).resolve().parents[1] / "data" / "pilot") + "/pilot_D.npy", mmap_mode="r"); g = np.load(str(Path(__file__).resolve().parents[1] / "data" / "pilot") + "/pilot_meta.npz")["gyro"]
     k = 250
     fig, axs = plt.subplots(1, 5, figsize=(7.1, 1.75))
     for ax, lv in zip(axs, cfg["levels"]):
