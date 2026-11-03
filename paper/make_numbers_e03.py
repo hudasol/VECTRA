@@ -94,7 +94,7 @@ if ct.exists():
         for lv in ["D0", "D2", "D4"]:
             if (lv, e) in cb.index:
                 put(f"c{e}{lv}hd", cb.loc[(lv, e), "head_med"]); put(f"c{e}{lv}dr", cb.loc[(lv, e), "drift_med"])
-for extra, tag in [("confirm_uncoupled_by_level.csv", "u"), ("confirm_anchored_by_level.csv", "a")]:
+for extra, tag in [("confirm_uncoupled_by_level.csv", "u"), ("confirm_anchored_by_level.csv", "a"), ("confirm_tilt_by_level.csv", "t")]:
     p = R / "e03" / extra
     if p.exists():
         cb = pd.read_csv(p).set_index(["level", "estimator"])

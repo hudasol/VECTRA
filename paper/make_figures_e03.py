@@ -89,7 +89,7 @@ def results():
         ax[0].plot(lv, g.head_med, color=c, marker=mk, ms=3.5, lw=1, label=e)
         ax[1].plot(lv, g.drift_med, color=c, marker=mk, ms=3.5, lw=1, label=e)
     ax[0].set_yscale("log"); ax[0].set_ylabel("heading RMSE (deg)"); ax[0].set_title("(a) confirmation, heading", fontsize=8)
-    ax[1].set_yscale("log"); ax[1].set_ylabel("drift (% of path)"); ax[1].set_title("(b) confirmation, drift", fontsize=8)
+    ax[1].set_ylabel("drift (% of path)"); ax[1].set_title("(b) confirmation, drift", fontsize=8)
     ax[1].legend(frameon=False, fontsize=5.5, ncol=2)
     h = pd.read_csv(R / "e03" / "homing.csv")
     a = ax[2]
