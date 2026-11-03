@@ -1,0 +1,108 @@
+# E02 image based study configuration, frozen with protocol v0.2.
+# Values marked (pilot) are set on the pilot split only. Values marked (assumed) are
+# modelling assumptions with the source or reason given in docs/experiment_protocol_v0.2.md.
+version: "v0.2-frozen"
+data:
+  repo: theairlabcmu/TartanGround
+  base_url: https://huggingface.co/datasets/theairlabcmu/TartanGround/resolve/main
+  pilot: [WesternDesertTown]
+  development: [DesertGasStation, MiddleEast, EndofTheWorld]
+  confirmation: [Ruins/Data_omni, AncientTowns/Data_omni, HQWesternSaloon/Data_omni]
+  nondesert_check: [Gascola/Data_omni]
+  excluded: [DesertGasStation/Data_omni/P0000]   # used to debug the VO code before the pilot
+  max_frames: 2000
+  image_size: 320
+  baseline_m: 0.25
+camera:                       # (assumed)
+  airlight: 0.6
+  max_range_m: 2000
+  texp_base_s: 0.005
+  texp_max_s: 0.02
+  blur_base_px: 1.0
+  full_well_e: 4000
+  read_noise_e: 6
+  drop_mean_burst_s: 0.5
+levels:                       # (pilot)
+  D0: {}
+  D1: {gain: 0.5, visibility_m: 1000, glare: 0.02, drop_frac: 0.02}
+  D2: {gain: 0.2, visibility_m: 200, glare: 0.05, drop_frac: 0.05}
+  D3: {gain: 0.07, visibility_m: 60, glare: 0.10, drop_frac: 0.10}
+  D4: {gain: 0.025, visibility_m: 20, glare: 0.20, drop_frac: 0.20}
+degradation_seeds: 3        # (S3) fallback from 5 for compute; see DECISIONS_S3
+imu:                          # noise added to the noise free dataset IMU (assumed, same family as E01)
+  rate_hz: 100
+  gyro_noise_density: 0.002
+  accel_noise_density: 0.02
+  gyro_bias_init_sigma: 0.002
+  gyro_bias_rw: 0.0001
+  accel_bias_init_sigma: 0.02
+  accel_bias_rw: 0.001
+filter:
+  vo_sigma: [0.0548, 0.041, 0.0049]   # (pilot) 1.4826 MAD of D0 VO errors, forward and right m/s, yaw rate rad/s
+  vo_gate_chi2_3dof: 11.34
+  heading_nominal_sigma_deg: 1.0  # fixed noise for B1, B1g and the B2 floor
+  heading_gate_chi2_1dof: 6.63
+  b2_window: 3
+  vo_nis_window: 10               # (pilot) rule: lowest mean of level medians of B3a drift, ties within 1 percent go to the smallest
+  failure_drift_ratio_pct: 10.0
+compass:                          # zenith polarisation compass (assumed)
+  rate_hz: 5
+  d_max: 0.6
+  floor_deg: 0.5
+  c_deg: 0.05
+  dop_meas_sigma: 0.002
+  sample_loss: 0.0
+sky:
+  location: {name: Abu Dhabi, lat_deg: 24.4539, lon_deg: 54.3773, utc_offset_h: 4}
+  conditions:
+    clear: {dop_factor: 1.0}
+    haze: {dop_factor: 0.6}
+    dust: {dop_factor: 0.3}
+    cloud: {dop_factor: 1.0, cloud_frac: 0.35, cloud_mean_s: 30.0, cloud_dop_scale: [0.05, 0.3], cloud_aop_extra_deg: 10.0}
+  dates: ["2026-06-21", "2026-12-21"]
+  start_times: ["07:30", "09:30", "11:45", "12:30", "14:30", "16:30"]
+filter_seeds: 2
+
+# ---------------- Study 3 additions (protocol v0.3) ----------------
+s3:
+  sky_table: results/e03_sky/dop_tables.npz       # SIMULATED radiative transfer
+  power_climatology: results/e03_sky/power_24.45_54.38.json
+  dates: ["2026-03-21", "2026-06-21", "2026-09-21", "2026-12-21"]
+  start_times: ["09:30", "11:45", "12:30", "14:30"]
+  aod_lognormal_sigma: 0.3          # (assumed) day to day spread around the monthly mean
+  dust_layer_m: 100                 # (assumed) depth of the near ground dust layer that sets the image visibility
+  imu_draws_confirm: 2
+  imu_draws_dev: 1
+  compass:                          # (assumed) sensor and error terms
+    rate_hz: 5
+    floor_deg: 0.5
+    c_deg: 0.05
+    dop_meas_sigma: 0.002
+    bias_sigma_deg: 1.0
+    bias_rw_deg_sqrt_s: 0.01
+    tilt_sigma_deg: 2.0             # used only where the rendered poses carry no roll and pitch (development set)
+    tilt_tau_s: 20.0
+    cloud_frac: 0.35
+    cloud_mean_s: 30.0
+    cloud_dop_scale: [0.05, 0.3]
+    cloud_aop_extra_deg: 10.0
+    sun_sigma_deg: 0.5
+    sun_bias_deg: 0.3
+    mag_sigma_deg: 2.0
+    mag_bias_deg: 3.0
+    mag_rw_deg_sqrt_s: 0.05
+  wheel_odometry:                   # (assumed) skid steer rover on sand
+    scale_sigma: 0.02
+    speed_sigma: 0.05
+    slip_frac: 0.1
+    slip_mean_s: 2.0
+    slip_excess: 0.15
+    yaw_scale_sigma: 0.05
+    yaw_rate_sigma: 0.02
+  filter:
+    r_bad_deg: 45.0                 # B5 bad mode
+    prior_bad: 0.1
+    huber_k: 1.345
+    lockout_samples: 25             # B3L: 5 s of consecutive gating
+    bias_rw_deg_sqrt_s: 0.01        # B7 process noise, equal to the simulated value (assumed known)
+    bias_init_deg: 1.0
