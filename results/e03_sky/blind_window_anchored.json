@@ -1,0 +1,93 @@
+{
+ "radiative_transfer|low|gt2": {
+  "zenith": 202,
+  "zenith_ring": 57,
+  "sun_sensor": 127
+ },
+ "radiative_transfer|low|gt5": {
+  "zenith": 136,
+  "zenith_ring": 22,
+  "sun_sensor": 49
+ },
+ "radiative_transfer|low|gt10": {
+  "zenith": 97,
+  "zenith_ring": 8,
+  "sun_sensor": 23
+ },
+ "radiative_transfer|mean|gt2": {
+  "zenith": 221,
+  "zenith_ring": 67,
+  "sun_sensor": 127
+ },
+ "radiative_transfer|mean|gt5": {
+  "zenith": 144,
+  "zenith_ring": 27,
+  "sun_sensor": 49
+ },
+ "radiative_transfer|mean|gt10": {
+  "zenith": 103,
+  "zenith_ring": 11,
+  "sun_sensor": 23
+ },
+ "radiative_transfer|high|gt2": {
+  "zenith": 232,
+  "zenith_ring": 73,
+  "sun_sensor": 127
+ },
+ "radiative_transfer|high|gt5": {
+  "zenith": 150,
+  "zenith_ring": 30,
+  "sun_sensor": 49
+ },
+ "radiative_transfer|high|gt10": {
+  "zenith": 108,
+  "zenith_ring": 13,
+  "sun_sensor": 23
+ },
+ "measured_anchored|low|gt2": {
+  "zenith": 154,
+  "zenith_ring": 33,
+  "sun_sensor": 127
+ },
+ "measured_anchored|low|gt5": {
+  "zenith": 90,
+  "zenith_ring": 10,
+  "sun_sensor": 49
+ },
+ "measured_anchored|low|gt10": {
+  "zenith": 62,
+  "zenith_ring": 0,
+  "sun_sensor": 23
+ },
+ "measured_anchored|mean|gt2": {
+  "zenith": 168,
+  "zenith_ring": 37,
+  "sun_sensor": 127
+ },
+ "measured_anchored|mean|gt5": {
+  "zenith": 95,
+  "zenith_ring": 12,
+  "sun_sensor": 49
+ },
+ "measured_anchored|mean|gt10": {
+  "zenith": 68,
+  "zenith_ring": 0,
+  "sun_sensor": 23
+ },
+ "measured_anchored|high|gt2": {
+  "zenith": 179,
+  "zenith_ring": 39,
+  "sun_sensor": 127
+ },
+ "measured_anchored|high|gt5": {
+  "zenith": 100,
+  "zenith_ring": 13,
+  "sun_sensor": 49
+ },
+ "measured_anchored|high|gt10": {
+  "zenith": 64,
+  "zenith_ring": 0,
+  "sun_sensor": 23
+ },
+ "study2_law|gt10": 64
+}

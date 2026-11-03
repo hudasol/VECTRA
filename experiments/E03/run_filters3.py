@@ -38,6 +38,7 @@ ESTIMATORS = {
     "ORH": (4, "oracle", "vo", 0, 0), "ORT": (0, "zenith", "votrue", 0, 0),
 }
 VIS = {"D0": None, "D1": 1000.0, "D2": 200.0, "D3": 60.0, "D4": 20.0}
+SKY_TABLE = None
 DIRS = {"dev": "e02_vo", "pilot": "e02_vo", "confirm": "e03_vo", "nondesert": "e03_vo"}
 ENVS = {"pilot": ["WesternDesertTown"], "dev": ["DesertGasStation", "MiddleEast", "EndofTheWorld"],
         "confirm": ["Ruins", "AncientTowns", "HQWesternSaloon"], "nondesert": ["Gascola"]}
@@ -80,7 +81,7 @@ def process(args):
     path, cfg, split, estimators, coupling, draws, keys, dump_features = args
     s3 = cfg["s3"]
     clim = json.loads((ROOT / s3["power_climatology"]).read_text())
-    table = SkyTable(ROOT / s3["sky_table"])
+    table = SkyTable(ROOT / (SKY_TABLE or s3["sky_table"]))
     pf = json.loads((ROOT / "results" / "e03" / "pilot_fit.json").read_text())
     b8p = ROOT / "results" / "e03" / "b8_model.json"
     b8 = json.loads(b8p.read_text()) if b8p.exists() else None
@@ -194,8 +195,11 @@ def main():
     ap.add_argument("--keys", nargs="*", default=[])
     ap.add_argument("--max-traj", type=int, default=0)
     ap.add_argument("--dump-features", default="")
+    ap.add_argument("--sky-table", default="")
     a = ap.parse_args()
     cfg = load_config(ROOT / "configs" / "e03.yaml")
+    if a.sky_table:
+        cfg["s3"]["sky_table"] = a.sky_table
     draws = a.draws or (cfg["s3"]["imu_draws_confirm"] if a.split == "confirm" else cfg["s3"]["imu_draws_dev"])
     excl = set(cfg["data"].get("excluded", []))
     files = sorted(p for p in (ROOT / "results" / DIRS[a.split]).glob("*.npz")
