@@ -39,6 +39,7 @@ ESTIMATORS = {
 }
 VIS = {"D0": None, "D1": 1000.0, "D2": 200.0, "D3": 60.0, "D4": 20.0}
 SKY_TABLE = None
+ASSUME_TILT = False
 DIRS = {"dev": "e02_vo", "pilot": "e02_vo", "confirm": "e03_vo", "nondesert": "e03_vo"}
 ENVS = {"pilot": ["WesternDesertTown"], "dev": ["DesertGasStation", "MiddleEast", "EndofTheWorld"],
         "confirm": ["Ruins", "AncientTowns", "HQWesternSaloon"], "nondesert": ["Gascola"]}
@@ -105,8 +106,9 @@ def process(args):
     tf = np.arange(nfr) * 0.1
     yaw_cue = np.interp(t_cue, tf, np.unwrap(yaw[:nfr]))
     roll = pitch = None
+    ASSUME_TILT = bool(s3.get("assume_tilt", False))
     tilt_src = "gauss_markov_assumed"
-    if "roll" in z.files:
+    if "roll" in z.files and not ASSUME_TILT:
         roll = np.interp(t_cue, tf, np.unwrap(z["roll"][:nfr]))
         pitch = np.interp(t_cue, tf, np.unwrap(z["pitch"][:nfr]))
         tilt_src = "rendered_terrain"
@@ -196,10 +198,13 @@ def main():
     ap.add_argument("--max-traj", type=int, default=0)
     ap.add_argument("--dump-features", default="")
     ap.add_argument("--sky-table", default="")
+    ap.add_argument("--assume-tilt", type=int, default=0)
     a = ap.parse_args()
     cfg = load_config(ROOT / "configs" / "e03.yaml")
     if a.sky_table:
         cfg["s3"]["sky_table"] = a.sky_table
+    if a.assume_tilt:
+        cfg["s3"]["assume_tilt"] = True
     draws = a.draws or (cfg["s3"]["imu_draws_confirm"] if a.split == "confirm" else cfg["s3"]["imu_draws_dev"])
     excl = set(cfg["data"].get("excluded", []))
     files = sorted(p for p in (ROOT / "results" / DIRS[a.split]).glob("*.npz")
