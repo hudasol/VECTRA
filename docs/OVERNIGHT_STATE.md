@@ -16,6 +16,8 @@ Start: 2026-11-03 05:47 (UTC+4). Effective work start after setup: 10:41. Hard f
 | Protocol v0.3 | frozen, tag protocol-v0.3-frozen (local) |
 | Sky model v2 | done, with a MEASURED check |
 | Estimator work | done except SE(3) and an external VIO baseline |
-| Data and confirmation | confirmation VO done; confirmation run started 12:31 |
-| Paper | pending |
-| Review | pending |
+| Data and confirmation | done (63,840 runs) plus uncoupled, anchored and tilt sensitivity runs |
+| Paper | done: full (9 pages) and short (8 pages) versions |
+| Review | done: independent final review applied; fresh clone checks passed |
+
+Finished: 2026-11-03 about 13:40 (UTC+4). Tag study3-final created locally.

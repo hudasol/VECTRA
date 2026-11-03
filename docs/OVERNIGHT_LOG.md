@@ -10,3 +10,7 @@
 - 11:55 Development run (34 trajectories, 21 systems) done; S = B4; protocol v0.3 frozen and tagged.
 - 12:30 Confirmation VO (15 trajectories, three seeds) done; confirmation run started.
 - Literature scan written (docs/literature/F_study3_scan.md).
+- 12:58 Confirmation run and secondary runs done; H1 to H5 supported, H6 and H7 not met.
+- 13:05 Paper rebuilt (full and short); tilt sensitivity added after finding level poses.
+- 13:20 Independent final review written and applied; joint oracle diagnostic added.
+- 13:35 Fresh clone from GitHub: 22 tests pass, analyses, numbers and tables regenerate identically, both papers build.
