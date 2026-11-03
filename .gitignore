@@ -19,3 +19,10 @@ results/raw/
 Thumbs.db
 .vscode/
 logs/
+paper/*.aux
+paper/*.log
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.out
+paper/*.blg
+paper/*.bbl
