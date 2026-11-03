@@ -27,6 +27,8 @@ if ct.exists():
     t = pd.read_csv(ct)
     L = ["\\begin{tabular}{llrrrrl}", "\\toprule", "H & Pair & $A$ & $B$ & Diff [95\\% CI] & $p_{\\mathrm{Holm}}$ & Result \\\\",
          "\\midrule"]
+    t = t[t.H != "H3b"].copy()
+    t.loc[t.H == "H3", "H"] = "H3, H3b"
     for _, r in t.iterrows():
         p = "--" if pd.isna(r.p_holm) else ("$<$0.001" if r.p_holm < 0.001 else f(r.p_holm, 3))
         unit = "\\%" if r.metric == "drift_pct" else "$^\\circ$"

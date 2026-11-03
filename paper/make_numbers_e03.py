@@ -22,7 +22,7 @@ def put(k, v, nd=2):
 
 # sky
 v = json.loads((R / "e03_sky/validation.json").read_text())
-put("SSerr", "$10^{-12}$")
+put("SSerr", "numerical precision")
 clim = json.loads((R / "e03_sky/power_24.45_54.38.json").read_text())
 put("AODann", clim["AOD_55"]["ANN"]); put("AODjun", clim["AOD_55"]["JUN"]); put("AODjul", clim["AOD_55"]["JUL"])
 put("RTthirtyfiveLow", v["model_zenith_dop_elev35"]["0.15"]); put("RTthirtyfiveMean", v["model_zenith_dop_elev35"]["0.45"])
@@ -66,7 +66,7 @@ for sc, tag in [("march_morning", "M"), ("june_noon", "J")]:
 dev = pd.read_csv(R / "e03/dev_by_level.csv").set_index(["level", "estimator"])
 sel = json.loads((R / "e03/dev_selection.json").read_text())
 put("Ssel", sel["selected"])
-for e in ["B0", "B3", "B4", "ORH", "ORT", "B3C"]:
+for e in ["B0", "B3", "B4", "ORH", "ORT", "B3C", "W3"]:
     for lv in ["D0", "D4"]:
         put(f"dev{e}{lv}dr", dev.loc[(lv, e), "drift_med"]); put(f"dev{e}{lv}hd", dev.loc[(lv, e), "head_med"])
         put(f"dev{e}{lv}nees", dev.loc[(lv, e), "nees_med"], 0); put(f"dev{e}{lv}cov", dev.loc[(lv, e), "cover"])
@@ -102,6 +102,33 @@ for extra, tag in [("confirm_uncoupled_by_level.csv", "u"), ("confirm_anchored_b
             for lv in ["D0", "D2", "D4"]:
                 if (lv, e) in cb.index:
                     put(f"{tag}{e}{lv}hd", cb.loc[(lv, e), "head_med"]); put(f"{tag}{e}{lv}dr", cb.loc[(lv, e), "drift_med"])
+# like with like comparison for the dust coupling (seed s0, IMU draw 0 in both runs) and noon values
+if ct.exists():
+    cf = pd.read_csv(R / "e03/confirm.csv.gz")
+    sub = cf[(cf.dseed == "s0") & (cf.fseed == 0) & (cf.level == "D4")]
+    tm = sub.groupby(["traj", "estimator"]).head_rmse_deg.mean().groupby("estimator").median()
+    put("cpsBzeroDfourhd", tm["B0"]); put("cpsBthreeDfourhd", tm["B3"])
+    un = pd.read_csv(R / "e03/confirm_uncoupled.csv.gz")
+    tu = un[un.level == "D4"].groupby(["traj", "estimator"]).head_rmse_deg.mean().groupby("estimator").median()
+    put("unBzeroDfourhd", tu["B0"]); put("unBthreeDfourhd", tu["B3"])
+    put("benefitUn", tu["B0"] - tu["B3"], 1); put("benefitCo", tm["B0"] - tm["B3"], 1)
+    put("benefitRed", 100 * (1 - (tm["B0"] - tm["B3"]) / (tu["B0"] - tu["B3"])), 0)
+    nn = cf[(cf.date == "2026-06-21") & cf.time.isin(["11:45", "12:30"]) & (cf.estimator == "B1")]
+    put("noonBonePooled", nn.head_rmse_deg.mean(), 1); put("noonBoneDzero", nn[nn.level == "D0"].head_rmse_deg.mean(), 1)
+    put("factorHone", float(pd.read_csv(ct).set_index("H").loc["H1", "median_B"] / pd.read_csv(ct).set_index("H").loc["H1", "median_A"]), 1)
+for lab in ["c"]:
+    put("MeasAopMadClear", m["per_label_res_mad_deg"]["c"], 1)
+wa_lo = min(wa[f"measured_anchored|{c}|gt10"]["zenith"] for c in ("low", "mean", "high"))
+wa_hi = max(wa[f"radiative_transfer|{c}|gt10"]["zenith"] for c in ("low", "mean", "high"))
+put("WinMin", wa_lo); put("WinMax", wa_hi)
+dor = R / "e03/dev_oracle.csv.gz"
+if dor.exists():
+    do = pd.read_csv(dor)
+    g = do.groupby(["traj", "level", "estimator"]).nees_pos_mean.median().groupby(["level", "estimator"]).median()
+    c2 = do.groupby(["traj", "level", "estimator"]).cover95_pos.mean().groupby(["level", "estimator"]).mean()
+    for lv in ["D0", "D2", "D4"]:
+        for e in ["ORX", "ORH", "ORT", "B0"]:
+            put(f"or{e}{lv}nees", g.loc[(lv, e)], 0); put(f"or{e}{lv}cov", c2.loc[(lv, e)])
 vc = R / "e03/variance_components.json"
 if vc.exists():
     for k2, val in json.loads(vc.read_text()).items():

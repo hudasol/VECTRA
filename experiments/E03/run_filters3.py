@@ -35,7 +35,7 @@ ESTIMATORS = {
     "MAG": (4, "mag", "vo", 0, 0), "W0": (0, "zenith", "wo", 0, 0), "W3": (4, "zenith", "wo", 0, 0),
     "W4R": (6, "ring", "wo", 0, 0),
     # diagnostics: oracle heading (true yaw, 0.01 degree) and oracle translation (true body velocity, no compass)
-    "ORH": (4, "oracle", "vo", 0, 0), "ORT": (0, "zenith", "votrue", 0, 0),
+    "ORH": (4, "oracle", "vo", 0, 0), "ORT": (0, "zenith", "votrue", 0, 0), "ORX": (4, "oracle", "votrue", 0, 0),
 }
 VIS = {"D0": None, "D1": 1000.0, "D2": 200.0, "D3": 60.0, "D4": 20.0}
 SKY_TABLE = None
@@ -191,7 +191,7 @@ def main():
     ap.add_argument("--split", required=True, choices=list(ENVS))
     ap.add_argument("--out", required=True)
     ap.add_argument("--workers", type=int, default=2)
-    ap.add_argument("--estimators", nargs="*", default=[e for e in ESTIMATORS if e not in ("ORH", "ORT")])
+    ap.add_argument("--estimators", nargs="*", default=[e for e in ESTIMATORS if e not in ("ORH", "ORT", "ORX")])
     ap.add_argument("--coupling", type=int, default=1)
     ap.add_argument("--draws", type=int, default=None)
     ap.add_argument("--keys", nargs="*", default=[])
