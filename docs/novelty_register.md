@@ -53,3 +53,9 @@ Limit of the audit: 34 screened works were not opened, and a gap in the opened s
 ## Update for E02 (2026-11-01)
 
 The E02 estimator B3 sets the compass noise from the measured degree of polarisation with a continuous law and a chi square gate. N-016 already weights a polarisation compass by DoP in piecewise form, so B3 is presented as a continuous variant of that idea, not as a first. Compass plus visual inertial fusion exists (N-017, N-018). Near zenith failure is known in theory (N-019). What the opened literature does not show is a time resolved outage window for a zenith compass at Gulf latitude, combined with an image based degradation study on a ground robot. Full notes: docs/literature/E_polarisation_compass.md.
+
+## Study 3 update (2026-11-03)
+
+Source: docs/literature/F_study3_scan.md (works opened in this study).
+- N-020: Prior art for parts of Study 3 exists: a single camera compass with covariance estimation (Stuerzl 2017), a polarisation compass inside a VIO filter (Steidle 2019), chi square adapted compass noise (Wang 2024), a fused pattern compass tested in dust (Su 2026), vision based tilt compensation (Yuan 2025).
+- N-021: No opened work combines a radiative transfer sky with dust coupled to the camera degradation, DoP weighted compass fusion inside visual odometry, and a frozen confirmation on unseen environments. This combination, the measured check of the zenith law on open sky images and the geometry argument that no sky polarisation sensor removes the noon window are the novelty claims of Study 3.
