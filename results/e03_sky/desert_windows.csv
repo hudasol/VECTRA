@@ -1,0 +1,31 @@
+desert,lat_used,geometry,days_per_year_with_window,max_minutes
+Thar,27.0,zenith,98,94
+Thar,27.0,zenith_ring,0,0
+Thar,27.0,sun_sensor,0,0
+"Sahara, central",23.0,zenith,122,97
+"Sahara, central",23.0,zenith_ring,46,12
+"Sahara, central",23.0,sun_sensor,62,25
+Rub al Khali,20.0,zenith,140,95
+Rub al Khali,20.0,zenith_ring,28,12
+Rub al Khali,20.0,sun_sensor,64,24
+"Sahara, Sahel edge",16.0,zenith,162,93
+"Sahara, Sahel edge",16.0,zenith_ring,20,12
+"Sahara, Sahel edge",16.0,sun_sensor,40,24
+Abu Dhabi,24.0,zenith,118,97
+Abu Dhabi,24.0,zenith_ring,30,11
+Abu Dhabi,24.0,sun_sensor,54,25
+Great Sandy,-20.0,zenith,134,95
+Great Sandy,-20.0,zenith_ring,28,12
+Great Sandy,-20.0,sun_sensor,58,25
+Kalahari,-23.0,zenith,118,97
+Kalahari,-23.0,zenith_ring,44,12
+Kalahari,-23.0,sun_sensor,60,25
+Namib,-24.0,zenith,110,97
+Namib,-24.0,zenith_ring,30,11
+Namib,-24.0,sun_sensor,50,25
+Atacama,-25.0,zenith,106,97
+Atacama,-25.0,zenith_ring,0,0
+Atacama,-25.0,sun_sensor,38,21
+Simpson,-25.0,zenith,106,97
+Simpson,-25.0,zenith_ring,0,0
+Simpson,-25.0,sun_sensor,38,21
