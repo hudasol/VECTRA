@@ -20,7 +20,7 @@ The question, hypotheses, metrics and statistics are written in docs/experiment_
 - Study 1 (E01): a simulated planar rover with degradation levels D0 to D4 applied to the visual measurements and a synthetic heading cue. Protocol: docs/experiment_protocol_v0.1.md.
 - Study 2 (E02): TartanGround desert scenes (CC BY 4.0), degraded stereo images, stereo visual odometry, an eight state filter and six compass weighting schemes, 34 held out trajectories. Protocol: docs/experiment_protocol_v0.2.md (tag protocol-v0.2-frozen).
 - The heading cue in E01 is synthetic. Results from E01 say nothing about a real polarisation sensor.
-- This repository is a proposal seed and not a deployed system. It carries no endorsement from any organisation.
+- This repository is an independent research study and not a deployed system. It carries no endorsement from any organisation.
 
 ## Layout
 

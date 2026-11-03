@@ -2,7 +2,7 @@
 
 Version: draft v0, 2026-10-20.
 Status: superseded for the simulation study by docs/experiment_protocol_v0.1.md, which is frozen. This draft is kept as written. Original status: NOT FROZEN. Nothing here is a commitment until the freeze date is set and recorded in the results register. Items marked "to set after pilot" are intentionally open.
-Protocol review date: to be agreed with the faculty authors (proposed: Wednesday 28 October 2026).
+Protocol review date: proposed Wednesday 28 October 2026.
 
 ## 1. Hypotheses
 

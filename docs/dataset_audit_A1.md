@@ -1,6 +1,6 @@
 # Dataset audit A1: TartanGround
 
-Prepared by Aiman Shariff (task A1), submitted as a Word document dated 25 October 2026, with facts accessed 25 and 26 October 2026. Transcribed here by the lead author on 1 November 2026. Section 5 is the lead author review and records which statements we could check ourselves.
+Dataset audit A1, dated 25 October 2026, with facts accessed 25 and 26 October 2026. Transcribed here on 1 November 2026. Section 5 is the review and records which statements we could check ourselves.
 
 Source codes used below: W is the TartanGround documentation page, M is the TartanAir V2 modalities page (shared with TartanGround), P is the paper (arXiv 2505.10696), G is the tartanairpy GitHub repository (commit 158a684, 9 June 2026, file list tartanair/download_ground_files.txt).
 
@@ -18,7 +18,7 @@ Source codes used below: W is the TartanGround documentation page, M is the Tart
 | LiDAR | Simulated from depth images. Website says 32 beam, modalities page says VLP-16 pattern (conflict). Rate not stated | W, M |
 | Ground truth pose | One text file per camera, x y z qx qy qz qw per line, 10 Hz | W, M, P |
 | Coordinate frame | NED for camera poses, as in TartanAir V1. Not defined on the TartanGround page | M |
-| Environments | 63 downloadable (Aiman reports the paper v1 as saying 70) | W, G |
+| Environments | 63 downloadable (the audit reports the paper v1 as saying 70) | W, G |
 | Wheeled trajectories | Differential drive 198 (paper v1: 226). Omni wheeled 440 (paper v1: 441). Legged ANYmal 240 | W, G, P |
 | Samples per trajectory | 600 to 8,000 | W, P |
 | Total size | About 16.7 TB summed from the file list. Website says about 16 TB in one place and about 15 TB in another | G, W |
@@ -73,9 +73,9 @@ Checked by us against pages we could open:
 | No dedicated limitations section in the paper | Paper text opened | Matches |
 | Data licence not stated on the official page | Read earlier through a fetch tool, page not reachable on 1 November 2026 | Consistent, not re checked |
 
-Not checked by us (pages not reachable from our side on 1 November 2026): MIT licence of the toolkit, the file list sizes, the IMU generation method, the LiDAR conflict, the NED frame, the author stated limitations list (our reading of the paper found only a remark that the SLAM evaluation is small scale), and the Hugging Face repository. These stay marked "reported by Aiman, not independently verified" until a second author confirms them.
+Not checked by us (pages not reachable from our side on 1 November 2026): MIT licence of the toolkit, the file list sizes, the IMU generation method, the LiDAR conflict, the NED frame, the author stated limitations list (our reading of the paper found only a remark that the SLAM evaluation is small scale), and the Hugging Face repository. These stay marked "reported by the audit, not independently verified" until a second author confirms them.
 
-Unresolved conflict: Aiman reports the paper version 1 as stating 70 environments and 910 trajectories (226 differential drive, 441 omni). The paper text we opened states 63 and 878 and does not say which version it is. We cannot tell from our side whether this is a version difference or a transcription error. Action: Aiman to paste the exact sentence from the arXiv version 1 abstract and the version number of the text we read.
+Unresolved conflict: the audit reports the paper version 1 as stating 70 environments and 910 trajectories (226 differential drive, 441 omni). The paper text we opened states 63 and 878 and does not say which version it is. We cannot tell from our side whether this is a version difference or a transcription error. Action: the audit to paste the exact sentence from the arXiv version 1 abstract and the version number of the text we read.
 
 Gaps to close before the audit can be signed off:
 

@@ -57,6 +57,6 @@ Pass criterion: one supported sequence runs to completion and produces a traject
 
 ## 6. Recommendation (proposed, for discussion; not a finding)
 
-Start with route (b) to get a working, tested comparison of B0, B1 and B2 inside the first two weeks, because it has no external blockers and lets us validate the protocol, the metrics and the degradation code. In parallel, run the section 4 tests and Aiman's check of the IMU rate and calibration. If both pass, add OpenVINS as an external reference baseline (route a) and report B0 against it, so that route (b) is not left as an unvalidated baseline. If they fail, report route (b) with its limitation stated openly.
+Start with route (b) to get a working, tested comparison of B0, B1 and B2 inside the first two weeks, because it has no external blockers and lets us validate the protocol, the metrics and the degradation code. In parallel, run the section 4 tests and the dataset audit check of the IMU rate and calibration. If both pass, add OpenVINS as an external reference baseline (route a) and report B0 against it, so that route (b) is not left as an unvalidated baseline. If they fail, report route (b) with its limitation stated openly.
 
-Decision owner: lead author with faculty review. Review point: decision memo (docs/decision_memo.md).
+Decision owner: lead author.

@@ -26,7 +26,7 @@ from vectra.config import load_config          # noqa: E402
 from vectra.degrade import Degrader, level_params, drop_mask   # noqa: E402
 from vectra.vo import StereoVO                  # noqa: E402
 
-CACHE = Path(os.environ.get("VECTRA_CACHE", "/home/claude/data/tg_cache"))
+CACHE = Path(os.environ.get("VECTRA_CACHE", str(Path(__file__).resolve().parents[2] / "data" / "tg_cache")))
 OUT = ROOT / "results" / "e02_vo"
 
 

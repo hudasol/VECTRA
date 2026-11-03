@@ -29,18 +29,12 @@ A claim is stated only at the tier where its evidence exists.
 
 ## Deliverables
 
-Repository with documents and history; protocol draft v0; baseline feasibility note; decision memo; faculty summary.
+Repository with documents and history; protocol draft v0; baseline feasibility note.
 
-## Team
+## Authors
 
-| Role | Person | Responsibility |
-| --- | --- | --- |
-| Lead | Huda Mueen | Repository, protocol, feasibility, integration |
-| Student author | Aiman Shariff | Dataset reality check (task A1) |
-| Student author | Maryam Zafar | Novelty audit (task M1) |
-| Faculty | Dr. Rajesh Subramanian | Review, to be confirmed |
-| Faculty | Dr. Narina Thakur | Review, to be confirmed |
+Huda Mueen (lead author), Aiman Shariff, Maryam Zafar, Dr. Shamik [surname], Dr. Narina Thakur, Dr. Rajesh Subramanian.
 
 ## Decision gates
 
-Gate 1 (end of task H1): continue, narrow or change topic, based on the feasibility note, the dataset check and the novelty audit. Gate criteria are written in docs/decision_memo.md.
+Gate 1 (end of task H1): continue, narrow or change topic, based on the feasibility note, the dataset check and the novelty audit. Gate criteria were applied by the lead author.
